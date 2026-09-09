@@ -1,12 +1,12 @@
 #ifndef WR_MATH_H
 #define WR_MATH_H
 
-typedef struct {
+typedef struct WrVector2 {
     float x, y;
-} Vector2;
+} WrVector2;
 
-typedef struct {
-    float r, g, b, a;
-} ColorRGBA;
+typedef struct WrColor {
+    unsigned char r, g, b, a;
+} WrColor;
 
 #endif // WR_MATH_H
