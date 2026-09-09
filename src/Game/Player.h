@@ -3,7 +3,7 @@
 
 #include "Utils/Math.h"
 
-typedef struct Player {
+typedef struct {
     Vector2 pos;    // Player position vector
     Vector2 dir;    // Player direction vector
 } Player;
