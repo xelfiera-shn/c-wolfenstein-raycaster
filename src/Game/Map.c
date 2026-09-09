@@ -14,7 +14,7 @@ static int defaultMap[64] = {
     1, 1, 1, 1, 1, 1, 1, 1,
 };
 
-bool InitMap(Map* m) {
+bool InitializeMap(Map* m) {
     m->w = 8;
     m->h = 8;
 
