@@ -5,6 +5,8 @@ typedef struct WrVector2 {
     float x, y;
 } WrVector2;
 
+void RotateVector2D(WrVector2* vec, float ang);
+
 typedef struct WrColor {
     unsigned char r, g, b, a;
 } WrColor;
