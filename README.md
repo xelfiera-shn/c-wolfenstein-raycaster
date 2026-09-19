@@ -1,2 +1,2 @@
-# c-wolfenstein-raycaster
+# C Wolfenstein Raycaster
 Wolfenstein style raycasting project.
