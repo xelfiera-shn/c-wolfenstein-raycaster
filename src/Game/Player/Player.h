@@ -9,6 +9,6 @@ typedef struct {
     WrVector2 dir;
 } Player;
 
-void InitPlayer(Player* p, Map* m);
+void InitPlayer(Player* p, const Map* m);
 
 #endif // WR_PLAYER_H
