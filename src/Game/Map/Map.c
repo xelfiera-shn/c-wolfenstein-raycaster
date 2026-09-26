@@ -40,7 +40,7 @@ void TerminateMap(Map* m) {
 }
 
 int GetMapCell(const Map* m, int cx, int cy) {
-    if (cx < 0 || cx >= m->width || cy < 0 || cy >= m->height) return -1;
+    if (cx < 0 || cx >= m->width || cy < 0 || cy >= m->height) return 1;
 
     return m->data[cy * m->width + cx];
 }
