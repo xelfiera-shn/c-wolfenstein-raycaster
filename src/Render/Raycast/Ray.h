@@ -4,6 +4,7 @@
 #include "Utils/Math.h"
 
 typedef enum {
+    WR_HIT_NONE,
     WR_HIT_VERTICAL,
     WR_HIT_HORIZONTAL,
     
