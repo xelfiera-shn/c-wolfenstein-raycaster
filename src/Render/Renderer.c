@@ -27,12 +27,12 @@ void DestroyRenderer(Renderer* r) {
     if (r->rays) {
         free(r->rays);
     }
-    
+
     free(r);
 }
 
 void UpdateRenderer(Renderer* r, Game* g) {
-
+    
 }
 
 void RenderGame(Renderer* r, Game* g) {
