@@ -16,7 +16,7 @@ void CastRays(Renderer* r, Game* g) {
     plane.y = -p->dir.x * planeLength;
 
     for (int i = 0; i < r->rayCount; i++) {
-        float cameraX = 2.f * i / (r->screenWidth - 1) - 1.f;
+        float cameraX = 2.f * i / (r->rayCount - 1) - 1.f;
 
         WrVector2 rayDir;
         rayDir.x = p->dir.x + plane.x * cameraX;
