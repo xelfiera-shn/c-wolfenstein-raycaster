@@ -5,21 +5,15 @@
 #include "Utils/Math.h"
 #include "Core/Constants.h"
 
-#include <stdio.h>
-
 void CastRays(Renderer* r, Game* g) {
     Map* m = &g->map;
     Player* p = &g->player;
 
     float planeLength = tanf(WR_PLAYER_FOV / 2.f);
-
-    printf("plane length: %f\n", planeLength);
     
     WrVector2 plane;
     plane.x = -p->dir.y * planeLength;
     plane.y = p->dir.x * planeLength;
-
-    printf("plane x: %f\n", plane.x);
 
     for (int i = 0; i < r->rayCount; i++) {
         float cameraX = 2.f * i / (r->rayCount - 1) - 1.f;
@@ -27,11 +21,6 @@ void CastRays(Renderer* r, Game* g) {
         WrVector2 rayDir;
         rayDir.x = p->dir.x + plane.x * cameraX;
         rayDir.y = p->dir.y + plane.y * cameraX;
-
-        if (i == 0) {
-            printf("ray dir x: %f, ray dir y: %f\n", rayDir.x, rayDir.y);
-            printf("==============\n");
-        }
 
         int mapX = (int)p->pos.x;
         int mapY = (int)p->pos.y;
