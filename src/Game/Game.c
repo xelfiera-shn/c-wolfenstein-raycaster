@@ -39,11 +39,11 @@ void UpdateGame(Game* g, float dt) {
     Player* p = &g->player;
 
     if (PlatformIsKeyDown(PLATFORM_KEY_A)) {
-        RotateVector(&p->dir, WR_PLAYER_TURN_SPEED * dt);
+        RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
     }
 
     if (PlatformIsKeyDown(PLATFORM_KEY_D)) {
-        RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
+        RotateVector(&p->dir, WR_PLAYER_TURN_SPEED * dt);
     }
 
     NormalizeVector(&p->dir);
