@@ -52,6 +52,9 @@ void RenderGame(Renderer* r, Game* g) {
     Map* m = &g->map;
     Player* p = &g->player;
 
+    PlatformDrawRectangle(0, 0, r->screenWidth, r->screenHeight / 2, PLATFORM_SKYBLUE);
+    PlatformDrawRectangle(0, r->screenHeight / 2, r->screenWidth, r->screenHeight / 2, PLATFORM_BEIGE);
+
     for (int i = 0; i < r->rayCount; i++) {
         Ray* ray = &r->rays[i];
 
@@ -59,7 +62,7 @@ void RenderGame(Renderer* r, Game* g) {
         if (h > r->screenHeight) h = (float)r->screenHeight;
 
         int rectStartY = (int)(r->screenHeight - h) / 2;
-        WrColor col = ray->hit == WR_HIT_VERTICAL ? PLATFORM_PURPLE : PLATFORM_MAGENTA;
+        WrColor col = ray->hit == WR_HIT_VERTICAL ? PLATFORM_DARKPURPLE : PLATFORM_PURPLE;
 
         PlatformDrawRectangle(i, rectStartY, 1, (int)h, col);
     }
