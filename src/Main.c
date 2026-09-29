@@ -18,6 +18,7 @@ int main(int argc, char const* argv[]) {
 
     while (!PlatformWindowShouldClose()) {
         PlatformBeginDrawing();
+        PlatformClearBackground(PLATFORM_LIGHTGRAY);
 
         // Begin - Game update
         float dt = PlatformGetFrameTime();
