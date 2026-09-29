@@ -55,8 +55,10 @@ void RenderGame(Renderer* r, Game* g) {
     for (int i = 0; i < r->rayCount; i++) {
         Ray* ray = &r->rays[i];
 
-        float h = r->screenWidth / ray->dist;
-        int rectStartY = (int)(r->screenWidth - h) / 2;
+        float h = r->screenHeight / ray->dist;
+        if (h > r->screenHeight) h = (float)r->screenHeight;
+
+        int rectStartY = (int)(r->screenHeight - h) / 2;
         WrColor col = ray->hit == WR_HIT_VERTICAL ? PLATFORM_PURPLE : PLATFORM_MAGENTA;
 
         PlatformDrawRectangle(i, rectStartY, 1, (int)h, col);
@@ -88,16 +90,25 @@ void RenderGame(Renderer* r, Game* g) {
         }
 
         if (c->renderer.isMinimapPlayerEnabled) {
-            int playerX = (int)(minimapStartX + (p->pos.x + 1.f) * (minimapCellSize + padding));
-            int playerY = (int)(minimapStartY + (p->pos.y + 1.f) * (minimapCellSize + padding));
+            float playerX = minimapStartX + p->pos.x * (minimapCellSize + padding);
+            float playerY = minimapStartY + p->pos.y * (minimapCellSize + padding);
 
-            PlatformDrawCircle(playerX, playerY, 3.f, PLATFORM_SKYBLUE);
+            PlatformDrawCircle((int)playerX, (int)playerY, 3.f, PLATFORM_SKYBLUE);
+
+            float playerDirX = playerX + p->dir.x * minimapCellSize / 2.f;
+            float playerDirY = playerY + p->dir.y * minimapCellSize / 2.f;
+
+            PlatformDrawLine((int)playerX, (int)playerY, (int)playerDirX, (int)playerDirY, PLATFORM_DARKBLUE);
 
             if (c->renderer.isMinimapRaysEnabled) {
-                int playerDirX = (int)(playerX + p->dir.x * minimapCellSize / 2.f);
-                int playerDirY = (int)(playerY + p->dir.y * minimapCellSize / 2.f);
+                for (int i = 0; i < r->rayCount; i++) {
+                    Ray* ray = &r->rays[i];
 
-                PlatformDrawLine(playerX, playerY, playerDirX, playerDirY, PLATFORM_DARKBLUE);
+                    float rayX = playerX + (ray->pos.x - p->pos.x) * (minimapCellSize + padding);
+                    float rayY = playerY + (ray->pos.y - p->pos.y) * (minimapCellSize + padding);
+
+                    PlatformDrawLine((int)playerX, (int)playerY, (int)rayX, (int)rayY, PLATFORM_DARKGREEN);
+                }
             }
         }
     }
