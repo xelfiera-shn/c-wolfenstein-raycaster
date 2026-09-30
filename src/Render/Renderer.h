@@ -15,7 +15,7 @@ typedef struct {
 Renderer* CreateRenderer(void);
 void DestroyRenderer(Renderer* r);
 
-void UpdateRenderer(Renderer* r, Game* g);
-void RenderGame(Renderer* r, Game* g);
+void UpdateRenderer(Renderer* r, const Game* g);
+void RenderGame(const Renderer* r, const Game* g);
 
 #endif // WR_RENDERER_H

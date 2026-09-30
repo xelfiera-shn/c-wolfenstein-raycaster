@@ -33,7 +33,7 @@ void DestroyRenderer(Renderer* r) {
     r = NULL;
 }
 
-void UpdateRenderer(Renderer* r, Game* g) {
+void UpdateRenderer(Renderer* r, const Game* g) {
     int sw = PlatformGetScreenWidth();
     int sh = PlatformGetScreenHeight();
 
@@ -51,10 +51,10 @@ void UpdateRenderer(Renderer* r, Game* g) {
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
 }
 
-void RenderGame(Renderer* r, Game* g) {
-    Config* c = &g->config;
-    Map* m = &g->map;
-    Player* p = &g->player;
+void RenderGame(const Renderer* r, const Game* g) {
+    const Config* c = &g->config;
+    const Map* m = &g->map;
+    const Player* p = &g->player;
 
     PlatformDrawRectangle(0, 0, r->screenWidth, r->screenHeight / 2, PLATFORM_SKYBLUE);
     PlatformDrawRectangle(0, r->screenHeight / 2, r->screenWidth, r->screenHeight / 2, PLATFORM_BEIGE);
