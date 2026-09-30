@@ -37,6 +37,7 @@ void TerminateMap(Map* m) {
     if (!m->data) return;
 
     free(m->data);
+    m->data = NULL;
 }
 
 int GetMapCell(const Map* m, int cx, int cy) {
