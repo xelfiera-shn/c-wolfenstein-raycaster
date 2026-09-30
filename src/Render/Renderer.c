@@ -48,7 +48,7 @@ void UpdateRenderer(Renderer* r, Game* g) {
     
     if (r->screenHeight != sh) r->screenHeight = sh;
     
-    CastRays(r, g);
+    CastRays(r->rays, r->rayCount, &g->map, &g->player);
 }
 
 void RenderGame(Renderer* r, Game* g) {

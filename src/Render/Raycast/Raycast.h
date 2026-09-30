@@ -4,6 +4,6 @@
 #include "Game/Game.h"
 #include "Render/Renderer.h"
 
-void CastRays(Renderer* r, Game* g);
+void CastRays(WrRay* rays, int count, const Map* m, const Player* p);
 
 #endif // WR_RAYCAST_H
