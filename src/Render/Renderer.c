@@ -39,7 +39,10 @@ void UpdateRenderer(Renderer* r, Game* g) {
     if (r->screenWidth != sw) {
         r->screenWidth = sw;
         r->rayCount = sw;
+
+        free(r->rays);
         r->rays = (Ray*)calloc(r->rayCount, sizeof(Ray));
+        if (!r->rays) return;
     }
     
     if (r->screenHeight != sh) r->screenHeight = sh;
