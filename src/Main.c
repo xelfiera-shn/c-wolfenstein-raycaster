@@ -17,21 +17,21 @@ int main(int argc, char const* argv[]) {
     if (!renderer) return -1;
 
     while (!PlatformWindowShouldClose()) {
-        PlatformBeginDrawing();
-        PlatformClearBackground(PLATFORM_LIGHTGRAY);
-
-        // Begin - Game update
         float dt = PlatformGetFrameTime();
-
+        
         UpdateGame(game, dt);
         UpdateRenderer(renderer, game);
+        
+        PlatformBeginDrawing();
 
         RenderGame(renderer, game);
-        // End - Game update
 
         PlatformDrawFPS(10, 10);
         PlatformEndDrawing();
     }
+
+    DestroyRenderer(renderer);
+    DestroyGame(game);
 
     PlatformCloseWindow();
 
