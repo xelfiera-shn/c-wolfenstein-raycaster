@@ -15,8 +15,7 @@ Renderer* CreateRenderer(void) {
     
     if (!r->rays) {
         free(r);
-
-        return NULL;
+        r = NULL;
     }
 
     return r;
@@ -27,9 +26,11 @@ void DestroyRenderer(Renderer* r) {
 
     if (r->rays) {
         free(r->rays);
+        r->rays = NULL;
     }
 
     free(r);
+    r = NULL;
 }
 
 void UpdateRenderer(Renderer* r, Game* g) {
