@@ -12,6 +12,7 @@ Game* CreateGame(void) {
 
     if (!InitDefaultMap(&g->map)) {
         free(g);
+        g = NULL;
 
         return NULL;
     }
@@ -26,6 +27,7 @@ void DestroyGame(Game* g) {
 
     TerminateMap(&g->map);
     free(g);
+    g = NULL;
 }
 
 void UpdateGame(Game* g, float dt) {
