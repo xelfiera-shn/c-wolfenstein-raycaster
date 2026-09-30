@@ -11,7 +11,7 @@ Renderer* CreateRenderer(void) {
     r->screenWidth = PlatformGetScreenWidth();
     r->screenHeight = PlatformGetScreenHeight();
     r->rayCount = r->screenWidth;
-    r->rays = (Ray*)calloc(r->rayCount, sizeof(Ray));
+    r->rays = (WrRay*)calloc(r->rayCount, sizeof(WrRay));
     
     if (!r->rays) {
         free(r);
@@ -42,7 +42,7 @@ void UpdateRenderer(Renderer* r, Game* g) {
         r->rayCount = sw;
 
         free(r->rays);
-        r->rays = (Ray*)calloc(r->rayCount, sizeof(Ray));
+        r->rays = (WrRay*)calloc(r->rayCount, sizeof(WrRay));
         if (!r->rays) return;
     }
     
@@ -60,7 +60,7 @@ void RenderGame(Renderer* r, Game* g) {
     PlatformDrawRectangle(0, r->screenHeight / 2, r->screenWidth, r->screenHeight / 2, PLATFORM_BEIGE);
 
     for (int i = 0; i < r->rayCount; i++) {
-        Ray* ray = &r->rays[i];
+        WrRay* ray = &r->rays[i];
 
         float h = r->screenHeight / ray->dist;
         if (h > r->screenHeight) h = (float)r->screenHeight;
@@ -109,7 +109,7 @@ void RenderGame(Renderer* r, Game* g) {
 
             if (c->renderer.isMinimapRaysEnabled) {
                 for (int i = 0; i < r->rayCount; i++) {
-                    Ray* ray = &r->rays[i];
+                    WrRay* ray = &r->rays[i];
 
                     float rayX = playerX + (ray->pos.x - p->pos.x) * (minimapCellSize + padding);
                     float rayY = playerY + (ray->pos.y - p->pos.y) * (minimapCellSize + padding);

@@ -15,6 +15,6 @@ typedef struct {
     WrVector2 pos;
     float dist;
     WrHitType hit;
-} Ray;
+} WrRay;
 
 #endif // WR_RAY_H

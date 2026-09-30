@@ -50,7 +50,7 @@ void CastRays(Renderer* r, Game* g) {
             }
         }
 
-        Ray* ray = &r->rays[i];
+        WrRay* ray = &r->rays[i];
         if (hitFound) {
             ray->dist = perp;
             ray->pos.x = (p->pos.x + rayDir.x * perp);

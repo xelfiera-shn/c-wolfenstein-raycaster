@@ -8,7 +8,7 @@ typedef struct {
     int screenWidth; // Width of window screen
     int screenHeight; // Height of window screen
     
-    Ray* rays;
+    WrRay* rays;
     int rayCount; // Count of rays (same as screen width but that's understandable then)
 } Renderer;
 
