@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include "Core/Constants.h"
 #include "Platform/Platform.h"
+#include "Utils/Math.h"
 
 Game* CreateGame(void) {
     Game* g = (Game*)calloc(1, sizeof(Game));
@@ -52,20 +53,21 @@ void UpdateGame(Game* g, float dt) {
 
     float playerMoveDeltaX = p->dir.x * WR_PLAYER_MOVE_SPEED * dt;
     float playerMoveDeltaY = p->dir.y * WR_PLAYER_MOVE_SPEED * dt;
+    float playerCollisionRadius = 0.2f;
 
     if (PlatformIsKeyDown(PLATFORM_KEY_W)) {
         float newX = p->pos.x + playerMoveDeltaX;
-        if (GetMapCell(m, (int)newX, (int)p->pos.y) == 0) p->pos.x = newX;
+        if (GetMapCell(m, (int)(newX + SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
 
         float newY = p->pos.y + playerMoveDeltaY;
-        if (GetMapCell(m, (int)p->pos.x, (int)newY) == 0) p->pos.y = newY;
+        if (GetMapCell(m, (int)p->pos.x, (int)(newY + SIGN(playerMoveDeltaY) * playerCollisionRadius)) == 0) p->pos.y = newY;
     }
 
     if (PlatformIsKeyDown(PLATFORM_KEY_S)) {
         float newX = p->pos.x - playerMoveDeltaX;
-        if (GetMapCell(m, (int)newX, (int)p->pos.y) == 0) p->pos.x = newX;
+        if (GetMapCell(m, (int)(newX - SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
 
         float newY = p->pos.y - playerMoveDeltaY;
-        if (GetMapCell(m, (int)p->pos.x, (int)newY) == 0) p->pos.y = newY;
+        if (GetMapCell(m, (int)p->pos.x, (int)(newY - SIGN(playerMoveDeltaY) * playerCollisionRadius)) == 0) p->pos.y = newY;
     }
 }
