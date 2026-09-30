@@ -18,6 +18,7 @@ int main(int argc, char const* argv[]) {
 
     while (!PlatformWindowShouldClose()) {
         float dt = PlatformGetFrameTime();
+        if (dt > 0.1f) dt = 0.1f; // If fps less than 10, fix delta time
         
         UpdateGame(game, dt);
         UpdateRenderer(renderer, game);
