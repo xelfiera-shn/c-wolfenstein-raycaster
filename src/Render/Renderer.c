@@ -1,8 +1,8 @@
 #include "Renderer.h"
-
-#include <stdlib.h>
 #include "Platform/Platform.h"
 #include "Raycast/Raycast.h"
+
+#include <stdlib.h>
 
 Renderer* CreateRenderer(void) {
     Renderer* r = (Renderer*)calloc(1, sizeof(Renderer));

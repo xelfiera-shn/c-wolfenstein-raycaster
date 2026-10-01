@@ -1,9 +1,9 @@
 #include "Raycast.h"
+#include "Utils/Math.h"
+#include "Core/Constants.h"
 
 #include <math.h>
 #include <float.h>
-#include "Utils/Math.h"
-#include "Core/Constants.h"
 
 void CastRays(WrRay* rays, int count, const Map* m, const Player* p) {
     float planeLength = tanf(WR_PLAYER_FOV / 2.f);
