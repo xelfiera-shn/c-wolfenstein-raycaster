@@ -1,0 +1,2 @@
+- Framebuffer mechanism
+- Map loading from file
