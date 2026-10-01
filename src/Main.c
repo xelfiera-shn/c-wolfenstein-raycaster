@@ -2,10 +2,12 @@
 #include "Game/Game.h"
 #include "Render/Renderer.h"
 
+#include <stdlib.h>
 #include <raylib.h>
 
 int main(int argc, char const* argv[]) {
     (void)argc; (void)argv;
+    int exitCode = EXIT_FAILURE;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WR_SCREEN_DEFAULT_WIDTH, WR_SCREEN_DEFAULT_HEIGHT, "C Wolfenstein Raycaster");
@@ -26,6 +28,7 @@ int main(int argc, char const* argv[]) {
         RenderGame(renderer, game);
     }
     
+    exitCode = EXIT_SUCCESS;
     cleanup:
 
     DestroyRenderer(renderer);
@@ -36,5 +39,5 @@ int main(int argc, char const* argv[]) {
 
     CloseWindow();
 
-    return 0;
+    return exitCode;
 }
