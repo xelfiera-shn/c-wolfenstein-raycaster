@@ -1,5 +1,7 @@
 #include "Renderer.h"
+#include "Raycast/Ray.h"
 #include "Raycast/Raycast.h"
+#include "Game/Game.h"
 
 #include <stdlib.h>
 #include <raylib.h>

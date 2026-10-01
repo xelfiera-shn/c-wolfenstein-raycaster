@@ -1,10 +1,8 @@
 #ifndef WR_RENDERER_H
 #define WR_RENDERER_H
 
-#include "Raycast/Ray.h"
-#include "Game/Game.h"
-
 typedef struct WrRenderer WrRenderer;
+typedef struct WrGame WrGame;
 
 WrRenderer* CreateRenderer(void);
 void DestroyRenderer(WrRenderer* r);
