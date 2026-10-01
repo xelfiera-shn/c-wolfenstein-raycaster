@@ -30,7 +30,6 @@ void DestroyRenderer(Renderer* r) {
     }
 
     free(r);
-    r = NULL;
 }
 
 void UpdateRenderer(Renderer* r, const Game* g) {
@@ -38,12 +37,12 @@ void UpdateRenderer(Renderer* r, const Game* g) {
     int sh = GetScreenHeight();
 
     if (r->screenWidth != sw) {
-        r->screenWidth = sw;
-        r->rayCount = sw;
+        WrRay* tmp = realloc(r->rays, (size_t)sw * sizeof *tmp);
+        if (!tmp) return;
 
-        free(r->rays);
-        r->rays = calloc(r->rayCount, sizeof* r->rays);
-        if (!r->rays) return;
+        r->rays = tmp;
+        r->rayCount = sw;
+        r->screenWidth = sw;
     }
     
     if (r->screenHeight != sh) r->screenHeight = sh;
@@ -89,7 +88,7 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
     float minimapScale = 1.f / 30.f;
 
     // Render minimap bg
-    int minimapCellSize = (r->screenWidth < r->screenHeight ? r->screenWidth : r->screenHeight) * minimapScale;
+    int minimapCellSize = (int)((r->screenWidth < r->screenHeight ? r->screenWidth : r->screenHeight) * minimapScale);
     int minimapWidth = m->width * (minimapCellSize + padding) - padding;
     int minimapHeight = m->height * (minimapCellSize + padding) - padding;
 

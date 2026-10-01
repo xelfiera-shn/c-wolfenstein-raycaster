@@ -28,7 +28,10 @@ int main(int argc, char const* argv[]) {
     }
 
     DestroyRenderer(renderer);
+    renderer = NULL;
+
     DestroyGame(game);
+    game = NULL;
 
     CloseWindow();
 
