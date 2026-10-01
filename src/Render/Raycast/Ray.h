@@ -7,7 +7,7 @@ typedef enum {
     WR_HIT_NONE,
     WR_HIT_VERTICAL,
     WR_HIT_HORIZONTAL,
-    
+
     WR_HIT_COUNT
 } WrHitType;
 

@@ -6,7 +6,8 @@
 #include <raylib.h>
 
 int main(int argc, char const* argv[]) {
-    (void)argc; (void)argv;
+    (void)argc;
+    (void)argv;
     int exitCode = EXIT_FAILURE;
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
@@ -21,16 +22,16 @@ int main(int argc, char const* argv[]) {
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
         if (dt > 0.1f) dt = 0.1f; // If fps less than 10, fix delta time
-        
+
         UpdateGame(game, dt);
         UpdateRenderer(renderer, game);
-        
+
         RenderGame(renderer, game);
     }
-    
-    exitCode = EXIT_SUCCESS;
-    cleanup:
 
+    exitCode = EXIT_SUCCESS;
+
+cleanup:
     DestroyRenderer(renderer);
     renderer = NULL;
 

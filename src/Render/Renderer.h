@@ -5,9 +5,9 @@
 #include "Game/Game.h"
 
 typedef struct {
-    int screenWidth; // Width of window screen
+    int screenWidth;  // Width of window screen
     int screenHeight; // Height of window screen
-    
+
     WrRay* rays;
     int rayCount; // Count of rays (same as screen width but that's understandable then)
 } Renderer;

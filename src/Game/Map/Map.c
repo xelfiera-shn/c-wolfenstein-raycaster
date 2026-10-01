@@ -3,14 +3,8 @@
 #include <stdlib.h>
 
 static const int defaultMap[64] = {
-    1, 1, 1, 1, 1, 1, 1, 1,
-    1, 0, 0, 1, 0, 0, 0, 1,
-    1, 0, 0, 1, 0, 1, 1, 1,
-    1, 0, 0, 1, 0, 0, 0, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 1, 1, 0, 0, 0, 1, 1,
-    1, 0, 0, 0, 0, 0, 0, 1,
-    1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 1,
+    1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 };
 
 static const int defaultMapW = 8;
@@ -27,8 +21,8 @@ bool InitDefaultMap(Map* m) {
         m->data[i] = defaultMap[i];
     }
 
-    m->playerStartPos = (WrVector2){ 4.f, 4.f };
-    m->playerStartDir = (WrVector2){ 0.f, -1.f }; // Player looking up
+    m->playerStartPos = (WrVector2){4.f, 4.f};
+    m->playerStartDir = (WrVector2){0.f, -1.f}; // Player looking up
 
     return true;
 }

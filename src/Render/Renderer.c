@@ -12,7 +12,7 @@ Renderer* CreateRenderer(void) {
     r->screenHeight = GetScreenHeight();
     r->rayCount = r->screenWidth;
     r->rays = calloc(r->rayCount, sizeof *r->rays);
-    
+
     if (!r->rays) {
         free(r);
         r = NULL;
@@ -31,7 +31,7 @@ void DestroyRenderer(Renderer* r) {
 void UpdateRenderer(Renderer* r, const Game* g) {
     int sw = GetScreenWidth();
     int sh = GetScreenHeight();
-    
+
     if (sw <= 0 || sh <= 0) return;
 
     if (r->screenWidth != sw) {
@@ -42,9 +42,9 @@ void UpdateRenderer(Renderer* r, const Game* g) {
         r->rayCount = sw;
         r->screenWidth = sw;
     }
-    
+
     if (r->screenHeight != sh) r->screenHeight = sh;
-    
+
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
 }
 
@@ -93,14 +93,15 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
     int minimapStartX = r->screenWidth - minimapWidth - padding;
     int minimapStartY = r->screenHeight - minimapHeight - padding;
 
-    DrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding, minimapHeight + 2 * padding, BLACK);
-    
+    DrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding,
+                  minimapHeight + 2 * padding, BLACK);
+
     for (int y = 0; y < m->height; y++) {
         for (int x = 0; x < m->width; x++) {
             int cellX = minimapStartX + x * (minimapCellSize + padding);
             int cellY = minimapStartY + y * (minimapCellSize + padding);
             Color col = IsMapCellSolid(m, x, y) ? PINK : GRAY;
-            
+
             DrawRectangle(cellX, cellY, minimapCellSize, minimapCellSize, col);
         }
     }

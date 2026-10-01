@@ -64,13 +64,13 @@ static void MovePlayer(Player* p, const Map* m, float dx, float dy, bool isForwa
     float cx = newX + sign * WR_SIGN(dx) * WR_PLAYER_COLLISION_RADIUS;
     if (!IsMapCellSolid(m, (int)floorf(cx), (int)floorf(p->pos.y - WR_PLAYER_COLLISION_RADIUS)) &&
         !IsMapCellSolid(m, (int)floorf(cx), (int)floorf(p->pos.y + WR_PLAYER_COLLISION_RADIUS))) {
-            p->pos.x = newX;
-        }
+        p->pos.x = newX;
+    }
 
     float newY = p->pos.y + sign * dy;
     float cy = newY + sign * WR_SIGN(dy) * WR_PLAYER_COLLISION_RADIUS;
     if (!IsMapCellSolid(m, (int)floorf(p->pos.x - WR_PLAYER_COLLISION_RADIUS), (int)floorf(cy)) &&
         !IsMapCellSolid(m, (int)floorf(p->pos.x + WR_PLAYER_COLLISION_RADIUS), (int)floorf(cy))) {
-            p->pos.y = newY;
-        }
+        p->pos.y = newY;
+    }
 }
