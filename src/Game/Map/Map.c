@@ -20,7 +20,7 @@ bool InitDefaultMap(Map* m) {
     m->width = defaultMapW;
     m->height = defaultMapH;
 
-    m->data = malloc(defaultMapW * defaultMapH * sizeof* m->data);
+    m->data = malloc(defaultMapW * defaultMapH * sizeof *m->data);
     if (!m->data) return false;
 
     for (int i = 0; i < m->width * m->height; i++) {

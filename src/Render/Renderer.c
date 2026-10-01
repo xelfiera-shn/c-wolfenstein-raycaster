@@ -5,13 +5,13 @@
 #include <raylib.h>
 
 Renderer* CreateRenderer(void) {
-    Renderer* r = calloc(1, sizeof* r);
+    Renderer* r = calloc(1, sizeof *r);
     if (!r) return NULL;
 
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
     r->rayCount = r->screenWidth;
-    r->rays = calloc(r->rayCount, sizeof* r->rays);
+    r->rays = calloc(r->rayCount, sizeof *r->rays);
     
     if (!r->rays) {
         free(r);
@@ -24,11 +24,7 @@ Renderer* CreateRenderer(void) {
 void DestroyRenderer(Renderer* r) {
     if (!r) return;
 
-    if (r->rays) {
-        free(r->rays);
-        r->rays = NULL;
-    }
-
+    free(r->rays);
     free(r);
 }
 
@@ -120,7 +116,7 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
 
     // Render rays
     for (int i = 0; i < r->rayCount; i++) {
-        WrRay* ray = &r->rays[i];
+        const WrRay* ray = &r->rays[i];
 
         float rayX = playerX + (ray->pos.x - p->pos.x) * (minimapCellSize + padding);
         float rayY = playerY + (ray->pos.y - p->pos.y) * (minimapCellSize + padding);
