@@ -1,15 +1,15 @@
 #include "Renderer.h"
-#include "Platform/Platform.h"
 #include "Raycast/Raycast.h"
 
 #include <stdlib.h>
+#include <raylib.h>
 
 Renderer* CreateRenderer(void) {
     Renderer* r = (Renderer*)calloc(1, sizeof(Renderer));
     if (!r) return NULL;
 
-    r->screenWidth = PlatformGetScreenWidth();
-    r->screenHeight = PlatformGetScreenHeight();
+    r->screenWidth = GetScreenWidth();
+    r->screenHeight = GetScreenHeight();
     r->rayCount = r->screenWidth;
     r->rays = (WrRay*)calloc(r->rayCount, sizeof(WrRay));
     
@@ -34,8 +34,8 @@ void DestroyRenderer(Renderer* r) {
 }
 
 void UpdateRenderer(Renderer* r, const Game* g) {
-    int sw = PlatformGetScreenWidth();
-    int sh = PlatformGetScreenHeight();
+    int sw = GetScreenWidth();
+    int sh = GetScreenHeight();
 
     if (r->screenWidth != sw) {
         r->screenWidth = sw;
@@ -55,13 +55,18 @@ static void RenderView(const WrRay* rays, int count, int sw, int sh);
 static void RenderMinimap(const Renderer* r, const Game* g);
 
 void RenderGame(const Renderer* r, const Game* g) {
+    BeginDrawing();
+
     RenderView(r->rays, r->rayCount, r->screenWidth, r->screenHeight);
     RenderMinimap(r, g);
+
+    DrawFPS(10, 10);
+    EndDrawing();
 }
 
 static void RenderView(const WrRay* rays, int count, int sw, int sh) {
-    PlatformDrawRectangle(0, 0, sw, sh / 2, PLATFORM_SKYBLUE);
-    PlatformDrawRectangle(0, sh / 2, sw, sh / 2, PLATFORM_BEIGE);
+    DrawRectangle(0, 0, sw, sh / 2, SKYBLUE);
+    DrawRectangle(0, sh / 2, sw, sh / 2, BEIGE);
 
     for (int i = 0; i < count; i++) {
         const WrRay* ray = &rays[i];
@@ -70,9 +75,9 @@ static void RenderView(const WrRay* rays, int count, int sw, int sh) {
         if (h > sh) h = (float)sh;
 
         int rectStartY = (int)(sh - h) / 2;
-        WrColor col = ray->hit == WR_HIT_VERTICAL ? PLATFORM_DARKPURPLE : PLATFORM_PURPLE;
+        Color col = ray->hit == WR_HIT_VERTICAL ? DARKPURPLE : PURPLE;
 
-        PlatformDrawRectangle(i, rectStartY, 1, (int)h, col);
+        DrawRectangle(i, rectStartY, 1, (int)h, col);
     }
 }
 
@@ -91,15 +96,15 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
     int minimapStartX = r->screenWidth - minimapWidth - padding;
     int minimapStartY = r->screenHeight - minimapHeight - padding;
 
-    PlatformDrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding, minimapHeight + 2 * padding, PLATFORM_BLACK);
+    DrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding, minimapHeight + 2 * padding, BLACK);
     
     for (int y = 0; y < m->height; y++) {
         for (int x = 0; x < m->width; x++) {
             int cellX = minimapStartX + x * (minimapCellSize + padding);
             int cellY = minimapStartY + y * (minimapCellSize + padding);
-            WrColor col = GetMapCell(m, x, y) > 0 ? PLATFORM_PINK : PLATFORM_GRAY;
+            Color col = GetMapCell(m, x, y) > 0 ? PINK : GRAY;
             
-            PlatformDrawRectangle(cellX, cellY, minimapCellSize, minimapCellSize, col);
+            DrawRectangle(cellX, cellY, minimapCellSize, minimapCellSize, col);
         }
     }
 
@@ -107,12 +112,12 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
     float playerX = minimapStartX + p->pos.x * (minimapCellSize + padding);
     float playerY = minimapStartY + p->pos.y * (minimapCellSize + padding);
 
-    PlatformDrawCircle((int)playerX, (int)playerY, 3.f, PLATFORM_SKYBLUE);
+    DrawCircle((int)playerX, (int)playerY, 3.f, SKYBLUE);
 
     float playerDirX = playerX + p->dir.x * minimapCellSize / 2.f;
     float playerDirY = playerY + p->dir.y * minimapCellSize / 2.f;
 
-    PlatformDrawLine((int)playerX, (int)playerY, (int)playerDirX, (int)playerDirY, PLATFORM_DARKBLUE);
+    DrawLine((int)playerX, (int)playerY, (int)playerDirX, (int)playerDirY, DARKBLUE);
 
     // Render rays
     for (int i = 0; i < r->rayCount; i++) {
@@ -121,6 +126,6 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
         float rayX = playerX + (ray->pos.x - p->pos.x) * (minimapCellSize + padding);
         float rayY = playerY + (ray->pos.y - p->pos.y) * (minimapCellSize + padding);
 
-        PlatformDrawLine((int)playerX, (int)playerY, (int)rayX, (int)rayY, PLATFORM_DARKGREEN);
+        DrawLine((int)playerX, (int)playerY, (int)rayX, (int)rayY, DARKGREEN);
     }
 }

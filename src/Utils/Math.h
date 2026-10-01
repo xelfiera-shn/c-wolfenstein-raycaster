@@ -11,8 +11,4 @@ typedef struct {
 void RotateVector(WrVector2* vec, float ang);
 void NormalizeVector(WrVector2* vec);
 
-typedef struct {
-    unsigned char r, g, b, a;
-} WrColor;
-
 #endif // WR_MATH_H

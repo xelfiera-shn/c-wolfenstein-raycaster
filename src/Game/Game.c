@@ -1,9 +1,9 @@
 #include "Game.h"
 #include "Core/Constants.h"
-#include "Platform/Platform.h"
 #include "Utils/Math.h"
 
 #include <stdlib.h>
+#include <raylib.h>
 
 Game* CreateGame(void) {
     Game* g = (Game*)calloc(1, sizeof(Game));
@@ -33,11 +33,11 @@ void UpdateGame(Game* g, float dt) {
     Map* m = &g->map;
     Player* p = &g->player;
 
-    if (PlatformIsKeyDown(PLATFORM_KEY_A)) {
+    if (IsKeyDown(KEY_A)) {
         RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
     }
 
-    if (PlatformIsKeyDown(PLATFORM_KEY_D)) {
+    if (IsKeyDown(KEY_D)) {
         RotateVector(&p->dir, WR_PLAYER_TURN_SPEED * dt);
     }
 
@@ -47,7 +47,7 @@ void UpdateGame(Game* g, float dt) {
     float playerMoveDeltaY = p->dir.y * WR_PLAYER_MOVE_SPEED * dt;
     float playerCollisionRadius = 0.2f;
 
-    if (PlatformIsKeyDown(PLATFORM_KEY_W)) {
+    if (IsKeyDown(KEY_W)) {
         float newX = p->pos.x + playerMoveDeltaX;
         if (GetMapCell(m, (int)(newX + SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
 
@@ -55,7 +55,7 @@ void UpdateGame(Game* g, float dt) {
         if (GetMapCell(m, (int)p->pos.x, (int)(newY + SIGN(playerMoveDeltaY) * playerCollisionRadius)) == 0) p->pos.y = newY;
     }
 
-    if (PlatformIsKeyDown(PLATFORM_KEY_S)) {
+    if (IsKeyDown(KEY_S)) {
         float newX = p->pos.x - playerMoveDeltaX;
         if (GetMapCell(m, (int)(newX - SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
 
