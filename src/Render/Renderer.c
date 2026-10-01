@@ -31,6 +31,8 @@ void DestroyRenderer(Renderer* r) {
 void UpdateRenderer(Renderer* r, const Game* g) {
     int sw = GetScreenWidth();
     int sh = GetScreenHeight();
+    
+    if (sw <= 0 || sh <= 0) return;
 
     if (r->screenWidth != sw) {
         WrRay* tmp = realloc(r->rays, (size_t)sw * sizeof *tmp);
