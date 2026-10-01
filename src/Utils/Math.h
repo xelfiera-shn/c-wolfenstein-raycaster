@@ -2,7 +2,7 @@
 #define WR_MATH_H
 
 #define WR_PI 3.1415927f
-#define SIGN(val) ((val) >= 0 ? 1 : -1)
+#define WR_SIGN(val) ((val) >= 0 ? 1 : -1)
 
 typedef struct {
     float x, y;
