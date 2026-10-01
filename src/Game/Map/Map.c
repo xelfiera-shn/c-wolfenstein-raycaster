@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-int defaultMap[64] = {
+static const int defaultMap[64] = {
     1, 1, 1, 1, 1, 1, 1, 1,
     1, 0, 0, 1, 0, 0, 0, 1,
     1, 0, 0, 1, 0, 1, 1, 1,
@@ -13,8 +13,8 @@ int defaultMap[64] = {
     1, 1, 1, 1, 1, 1, 1, 1,
 };
 
-int defaultMapW = 8;
-int defaultMapH = 8;
+static const int defaultMapW = 8;
+static const int defaultMapH = 8;
 
 bool InitDefaultMap(Map* m) {
     m->width = defaultMapW;
