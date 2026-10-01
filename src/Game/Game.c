@@ -3,10 +3,11 @@
 #include "Utils/Math.h"
 
 #include <stdlib.h>
+#include <math.h>
 #include <raylib.h>
 
 Game* CreateGame(void) {
-    Game* g = (Game*)calloc(1, sizeof(Game));
+    Game* g = calloc(1, sizeof* g);
     if (!g) return NULL;
 
     if (!InitDefaultMap(&g->map)) {
@@ -49,17 +50,17 @@ void UpdateGame(Game* g, float dt) {
 
     if (IsKeyDown(KEY_W)) {
         float newX = p->pos.x + playerMoveDeltaX;
-        if (GetMapCell(m, (int)(newX + SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
+        if (!IsMapCellSolid(m, (int)floorf(newX + SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)floorf(p->pos.y))) p->pos.x = newX;
 
         float newY = p->pos.y + playerMoveDeltaY;
-        if (GetMapCell(m, (int)p->pos.x, (int)(newY + SIGN(playerMoveDeltaY) * playerCollisionRadius)) == 0) p->pos.y = newY;
+        if (!IsMapCellSolid(m, (int)floorf(p->pos.x), (int)floorf(newY + SIGN(playerMoveDeltaY) * playerCollisionRadius))) p->pos.y = newY;
     }
 
     if (IsKeyDown(KEY_S)) {
         float newX = p->pos.x - playerMoveDeltaX;
-        if (GetMapCell(m, (int)(newX - SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)p->pos.y) == 0) p->pos.x = newX;
+        if (!IsMapCellSolid(m, (int)floorf(newX - SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)floorf(p->pos.y))) p->pos.x = newX;
 
         float newY = p->pos.y - playerMoveDeltaY;
-        if (GetMapCell(m, (int)p->pos.x, (int)(newY - SIGN(playerMoveDeltaY) * playerCollisionRadius)) == 0) p->pos.y = newY;
+        if (!IsMapCellSolid(m, (int)floorf(p->pos.x), (int)floorf(newY - SIGN(playerMoveDeltaY) * playerCollisionRadius))) p->pos.y = newY;
     }
 }

@@ -19,8 +19,8 @@ void CastRays(WrRay* rays, int count, const Map* m, const Player* p) {
         rayDir.x = p->dir.x + plane.x * cameraX;
         rayDir.y = p->dir.y + plane.y * cameraX;
 
-        int mapX = (int)p->pos.x;
-        int mapY = (int)p->pos.y;
+        int mapX = (int)floorf(p->pos.x);
+        int mapY = (int)floorf(p->pos.y);
 
         float deltaDistX = (rayDir.x == 0.f) ? 1e30f : fabsf(1.f / rayDir.x);
         float deltaDistY = (rayDir.y == 0.f) ? 1e30f : fabsf(1.f / rayDir.y);
@@ -39,7 +39,7 @@ void CastRays(WrRay* rays, int count, const Map* m, const Player* p) {
             if (sideDistX < sideDistY) { sideDistX += deltaDistX; mapX += stepX; side = WR_HIT_VERTICAL; }
             else                       { sideDistY += deltaDistY; mapY += stepY; side = WR_HIT_HORIZONTAL; }
 
-            if (GetMapCell(m, mapX, mapY)) {
+            if (IsMapCellSolid(m, mapX, mapY)) {
                 perp = (side == WR_HIT_VERTICAL) ? sideDistX - deltaDistX : sideDistY - deltaDistY;
                 hitFound = true;
                 

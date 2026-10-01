@@ -18,5 +18,6 @@ bool InitDefaultMap(Map* m);
 void TerminateMap(Map* m);
 
 int GetMapCell(const Map* m, int cx, int cy);
+bool IsMapCellSolid(const Map* m, int cx, int cy);
 
 #endif // WR_MAP_H

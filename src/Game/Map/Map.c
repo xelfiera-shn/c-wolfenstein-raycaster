@@ -20,7 +20,7 @@ bool InitDefaultMap(Map* m) {
     m->width = defaultMapW;
     m->height = defaultMapH;
 
-    m->data = (int*)malloc(defaultMapW * defaultMapH * sizeof(int));
+    m->data = malloc(defaultMapW * defaultMapH * sizeof* m->data);
     if (!m->data) return false;
 
     for (int i = 0; i < m->width * m->height; i++) {
@@ -44,4 +44,8 @@ int GetMapCell(const Map* m, int cx, int cy) {
     if (cx < 0 || cx >= m->width || cy < 0 || cy >= m->height) return 1;
 
     return m->data[cy * m->width + cx];
+}
+
+bool IsMapCellSolid(const Map* m, int cx, int cy) {
+    return (GetMapCell(m, cx, cy) > 0);
 }

@@ -5,13 +5,13 @@
 #include <raylib.h>
 
 Renderer* CreateRenderer(void) {
-    Renderer* r = (Renderer*)calloc(1, sizeof(Renderer));
+    Renderer* r = calloc(1, sizeof* r);
     if (!r) return NULL;
 
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
     r->rayCount = r->screenWidth;
-    r->rays = (WrRay*)calloc(r->rayCount, sizeof(WrRay));
+    r->rays = calloc(r->rayCount, sizeof* r->rays);
     
     if (!r->rays) {
         free(r);
@@ -42,7 +42,7 @@ void UpdateRenderer(Renderer* r, const Game* g) {
         r->rayCount = sw;
 
         free(r->rays);
-        r->rays = (WrRay*)calloc(r->rayCount, sizeof(WrRay));
+        r->rays = calloc(r->rayCount, sizeof* r->rays);
         if (!r->rays) return;
     }
     
@@ -86,10 +86,10 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
     const Player* p = &g->player;
 
     int padding = 2;
-    int minimapRatio = 30;
+    float minimapScale = 1.f / 30.f;
 
     // Render minimap bg
-    int minimapCellSize = (r->screenWidth < r->screenHeight ? r->screenWidth : r->screenHeight) / minimapRatio;
+    int minimapCellSize = (r->screenWidth < r->screenHeight ? r->screenWidth : r->screenHeight) * minimapScale;
     int minimapWidth = m->width * (minimapCellSize + padding) - padding;
     int minimapHeight = m->height * (minimapCellSize + padding) - padding;
 
@@ -102,7 +102,7 @@ static void RenderMinimap(const Renderer* r, const Game* g) {
         for (int x = 0; x < m->width; x++) {
             int cellX = minimapStartX + x * (minimapCellSize + padding);
             int cellY = minimapStartY + y * (minimapCellSize + padding);
-            Color col = GetMapCell(m, x, y) > 0 ? PINK : GRAY;
+            Color col = IsMapCellSolid(m, x, y) ? PINK : GRAY;
             
             DrawRectangle(cellX, cellY, minimapCellSize, minimapCellSize, col);
         }
