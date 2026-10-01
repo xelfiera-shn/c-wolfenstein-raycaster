@@ -5,6 +5,6 @@
 #include "Game/Player/Player.h"
 #include "Render/Raycast/Ray.h"
 
-void CastRays(WrRay* rays, int count, const Map* m, const Player* p);
+void CastRays(WrRay* rays, int count, const WrMap* m, const WrPlayer* p);
 
 #endif // WR_RAYCAST_H

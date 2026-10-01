@@ -4,18 +4,12 @@
 #include "Raycast/Ray.h"
 #include "Game/Game.h"
 
-typedef struct {
-    int screenWidth;  // Width of window screen
-    int screenHeight; // Height of window screen
+typedef struct WrRenderer WrRenderer;
 
-    WrRay* rays;
-    int rayCount; // Count of rays (same as screen width but that's understandable then)
-} Renderer;
+WrRenderer* CreateRenderer(void);
+void DestroyRenderer(WrRenderer* r);
 
-Renderer* CreateRenderer(void);
-void DestroyRenderer(Renderer* r);
-
-void UpdateRenderer(Renderer* r, const Game* g);
-void RenderGame(const Renderer* r, const Game* g);
+void UpdateRenderer(WrRenderer* r, const WrGame* g);
+void RenderGame(const WrRenderer* r, const WrGame* g);
 
 #endif // WR_RENDERER_H

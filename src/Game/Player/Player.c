@@ -1,6 +1,6 @@
 #include "Player.h"
 
-void InitPlayer(Player* p, const Map* m) {
+void InitPlayer(WrPlayer* p, const WrMap* m) {
     p->pos = m->playerStartPos;
     p->dir = m->playerStartDir;
 }

@@ -14,8 +14,8 @@ int main(int argc, char const* argv[]) {
     InitWindow(WR_SCREEN_DEFAULT_WIDTH, WR_SCREEN_DEFAULT_HEIGHT, "C Wolfenstein Raycaster");
     SetTargetFPS(60);
 
-    Game* game = CreateGame();
-    Renderer* renderer = CreateRenderer();
+    WrGame* game = CreateGame();
+    WrRenderer* renderer = CreateRenderer();
 
     if (!game || !renderer) goto cleanup;
 

@@ -4,11 +4,11 @@
 #include "Utils/Math.h"
 #include "Game/Map/Map.h"
 
-typedef struct {
+typedef struct WrPlayer {
     WrVector2 pos;
     WrVector2 dir;
-} Player;
+} WrPlayer;
 
-void InitPlayer(Player* p, const Map* m);
+void InitPlayer(WrPlayer* p, const WrMap* m);
 
 #endif // WR_PLAYER_H

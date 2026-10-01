@@ -7,8 +7,8 @@
 #include <math.h>
 #include <raylib.h>
 
-Game* CreateGame(void) {
-    Game* g = calloc(1, sizeof *g);
+WrGame* CreateGame(void) {
+    WrGame* g = calloc(1, sizeof *g);
     if (!g) return NULL;
 
     if (!InitDefaultMap(&g->map)) {
@@ -22,18 +22,18 @@ Game* CreateGame(void) {
     return g;
 }
 
-void DestroyGame(Game* g) {
+void DestroyGame(WrGame* g) {
     if (!g) return;
 
     TerminateMap(&g->map);
     free(g);
 }
 
-static void MovePlayer(Player* p, const Map* m, float dx, float dy, bool isForward);
+static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isForward);
 
-void UpdateGame(Game* g, float dt) {
-    Map* m = &g->map;
-    Player* p = &g->player;
+void UpdateGame(WrGame* g, float dt) {
+    WrMap* m = &g->map;
+    WrPlayer* p = &g->player;
 
     if (IsKeyDown(KEY_A)) {
         RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
@@ -57,7 +57,7 @@ void UpdateGame(Game* g, float dt) {
     }
 }
 
-static void MovePlayer(Player* p, const Map* m, float dx, float dy, bool isForward) {
+static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isForward) {
     int sign = isForward ? 1 : -1;
 
     float newX = p->pos.x + sign * dx;

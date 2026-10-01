@@ -10,7 +10,7 @@ static const int defaultMap[64] = {
 static const int defaultMapW = 8;
 static const int defaultMapH = 8;
 
-bool InitDefaultMap(Map* m) {
+bool InitDefaultMap(WrMap* m) {
     m->width = defaultMapW;
     m->height = defaultMapH;
 
@@ -27,19 +27,19 @@ bool InitDefaultMap(Map* m) {
     return true;
 }
 
-void TerminateMap(Map* m) {
+void TerminateMap(WrMap* m) {
     if (!m->data) return;
 
     free(m->data);
     m->data = NULL;
 }
 
-int GetMapCell(const Map* m, int cx, int cy) {
+int GetMapCell(const WrMap* m, int cx, int cy) {
     if (cx < 0 || cx >= m->width || cy < 0 || cy >= m->height) return 1;
 
     return m->data[cy * m->width + cx];
 }
 
-bool IsMapCellSolid(const Map* m, int cx, int cy) {
+bool IsMapCellSolid(const WrMap* m, int cx, int cy) {
     return (GetMapCell(m, cx, cy) > 0);
 }

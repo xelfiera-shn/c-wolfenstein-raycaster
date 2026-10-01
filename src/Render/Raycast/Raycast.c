@@ -5,7 +5,7 @@
 #include <math.h>
 #include <float.h>
 
-void CastRays(WrRay* rays, int count, const Map* m, const Player* p) {
+void CastRays(WrRay* rays, int count, const WrMap* m, const WrPlayer* p) {
     float planeLength = tanf(WR_PLAYER_FOV / 2.f);
 
     WrVector2 plane;

@@ -4,8 +4,15 @@
 #include <stdlib.h>
 #include <raylib.h>
 
-Renderer* CreateRenderer(void) {
-    Renderer* r = calloc(1, sizeof *r);
+struct WrRenderer {
+    int screenWidth;  // Width of window screen
+    int screenHeight; // Height of window screen
+    WrRay* rays;
+    int rayCount; // Count of rays (same as screen width but that's understandable then)
+};
+
+WrRenderer* CreateRenderer(void) {
+    WrRenderer* r = calloc(1, sizeof *r);
     if (!r) return NULL;
 
     r->screenWidth = GetScreenWidth();
@@ -21,14 +28,14 @@ Renderer* CreateRenderer(void) {
     return r;
 }
 
-void DestroyRenderer(Renderer* r) {
+void DestroyRenderer(WrRenderer* r) {
     if (!r) return;
 
     free(r->rays);
     free(r);
 }
 
-void UpdateRenderer(Renderer* r, const Game* g) {
+void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
     int sh = GetScreenHeight();
 
@@ -49,9 +56,9 @@ void UpdateRenderer(Renderer* r, const Game* g) {
 }
 
 static void RenderView(const WrRay* rays, int count, int sw, int sh);
-static void RenderMinimap(const Renderer* r, const Game* g);
+static void RenderMinimap(const WrRenderer* r, const WrGame* g);
 
-void RenderGame(const Renderer* r, const Game* g) {
+void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
 
     RenderView(r->rays, r->rayCount, r->screenWidth, r->screenHeight);
@@ -78,9 +85,9 @@ static void RenderView(const WrRay* rays, int count, int sw, int sh) {
     }
 }
 
-static void RenderMinimap(const Renderer* r, const Game* g) {
-    const Map* m = &g->map;
-    const Player* p = &g->player;
+static void RenderMinimap(const WrRenderer* r, const WrGame* g) {
+    const WrMap* m = &g->map;
+    const WrPlayer* p = &g->player;
 
     int padding = 2;
     float minimapScale = 1.f / 30.f;

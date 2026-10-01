@@ -4,14 +4,14 @@
 #include "Map/Map.h"
 #include "Player/Player.h"
 
-typedef struct {
-    Map map;
-    Player player;
-} Game;
+typedef struct WrGame {
+    WrMap map;
+    WrPlayer player;
+} WrGame;
 
-Game* CreateGame(void);
-void DestroyGame(Game* g);
+WrGame* CreateGame(void);
+void DestroyGame(WrGame* g);
 
-void UpdateGame(Game* g, float dt);
+void UpdateGame(WrGame* g, float dt);
 
 #endif // WR_GAME_H

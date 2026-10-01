@@ -5,19 +5,19 @@
 
 #include <stdbool.h>
 
-typedef struct {
+typedef struct WrMap {
     int* data;
     int width;
     int height;
 
     WrVector2 playerStartPos; // Player start position vector
     WrVector2 playerStartDir; // Player start direction vector
-} Map;
+} WrMap;
 
-bool InitDefaultMap(Map* m);
-void TerminateMap(Map* m);
+bool InitDefaultMap(WrMap* m);
+void TerminateMap(WrMap* m);
 
-int GetMapCell(const Map* m, int cx, int cy);
-bool IsMapCellSolid(const Map* m, int cx, int cy);
+int GetMapCell(const WrMap* m, int cx, int cy);
+bool IsMapCellSolid(const WrMap* m, int cx, int cy);
 
 #endif // WR_MAP_H
