@@ -4,6 +4,8 @@
 #include "Map/Map.h"
 #include "Player/Player.h"
 
+typedef struct WrInput WrInput;
+
 typedef struct WrGame {
     WrMap map;
     WrPlayer player;
@@ -12,6 +14,6 @@ typedef struct WrGame {
 WrGame* CreateGame(void);
 void DestroyGame(WrGame* g);
 
-void UpdateGame(WrGame* g, float dt);
+void UpdateGame(WrGame* g, WrInput* in, float dt);
 
 #endif // WR_GAME_H

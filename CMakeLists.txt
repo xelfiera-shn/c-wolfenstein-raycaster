@@ -24,6 +24,7 @@ add_executable(${PROJECT_NAME} src/Main.c)
 
 add_subdirectory(src/Core)
 add_subdirectory(src/Game)
+add_subdirectory(src/Input)
 add_subdirectory(src/Render)
 add_subdirectory(src/Utils)
 

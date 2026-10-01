@@ -1,11 +1,11 @@
 #include "Game.h"
 #include "Core/Constants.h"
 #include "Utils/Math.h"
+#include "Input/Input.h"
 
 #include <stdlib.h>
 #include <stdbool.h>
 #include <math.h>
-#include <raylib.h>
 
 WrGame* CreateGame(void) {
     WrGame* g = calloc(1, sizeof *g);
@@ -31,15 +31,15 @@ void DestroyGame(WrGame* g) {
 
 static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isForward);
 
-void UpdateGame(WrGame* g, float dt) {
+void UpdateGame(WrGame* g, WrInput* in, float dt) {
     WrMap* m = &g->map;
     WrPlayer* p = &g->player;
 
-    if (IsKeyDown(KEY_A)) {
+    if (in->keys[WR_KEY_A]) {
         RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
     }
 
-    if (IsKeyDown(KEY_D)) {
+    if (in->keys[WR_KEY_D]) {
         RotateVector(&p->dir, WR_PLAYER_TURN_SPEED * dt);
     }
 
@@ -48,11 +48,11 @@ void UpdateGame(WrGame* g, float dt) {
     float playerMoveDeltaX = p->dir.x * WR_PLAYER_MOVE_SPEED * dt;
     float playerMoveDeltaY = p->dir.y * WR_PLAYER_MOVE_SPEED * dt;
 
-    if (IsKeyDown(KEY_W)) {
+    if (in->keys[WR_KEY_W]) {
         MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, true);
     }
 
-    if (IsKeyDown(KEY_S)) {
+    if (in->keys[WR_KEY_S]) {
         MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, false);
     }
 }
