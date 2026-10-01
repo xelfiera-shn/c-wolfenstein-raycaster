@@ -3,11 +3,12 @@
 #include "Utils/Math.h"
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include <math.h>
 #include <raylib.h>
 
 Game* CreateGame(void) {
-    Game* g = calloc(1, sizeof* g);
+    Game* g = calloc(1, sizeof *g);
     if (!g) return NULL;
 
     if (!InitDefaultMap(&g->map)) {
@@ -28,6 +29,8 @@ void DestroyGame(Game* g) {
     free(g);
 }
 
+static void MovePlayer(Player* p, const Map* m, float dx, float dy, bool isForward);
+
 void UpdateGame(Game* g, float dt) {
     Map* m = &g->map;
     Player* p = &g->player;
@@ -44,21 +47,30 @@ void UpdateGame(Game* g, float dt) {
 
     float playerMoveDeltaX = p->dir.x * WR_PLAYER_MOVE_SPEED * dt;
     float playerMoveDeltaY = p->dir.y * WR_PLAYER_MOVE_SPEED * dt;
-    float playerCollisionRadius = 0.2f;
 
     if (IsKeyDown(KEY_W)) {
-        float newX = p->pos.x + playerMoveDeltaX;
-        if (!IsMapCellSolid(m, (int)floorf(newX + SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)floorf(p->pos.y))) p->pos.x = newX;
-
-        float newY = p->pos.y + playerMoveDeltaY;
-        if (!IsMapCellSolid(m, (int)floorf(p->pos.x), (int)floorf(newY + SIGN(playerMoveDeltaY) * playerCollisionRadius))) p->pos.y = newY;
+        MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, true);
     }
 
     if (IsKeyDown(KEY_S)) {
-        float newX = p->pos.x - playerMoveDeltaX;
-        if (!IsMapCellSolid(m, (int)floorf(newX - SIGN(playerMoveDeltaX) * playerCollisionRadius), (int)floorf(p->pos.y))) p->pos.x = newX;
-
-        float newY = p->pos.y - playerMoveDeltaY;
-        if (!IsMapCellSolid(m, (int)floorf(p->pos.x), (int)floorf(newY - SIGN(playerMoveDeltaY) * playerCollisionRadius))) p->pos.y = newY;
+        MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, false);
     }
+}
+
+static void MovePlayer(Player* p, const Map* m, float dx, float dy, bool isForward) {
+    int sign = isForward ? 1 : -1;
+
+    float newX = p->pos.x + sign * dx;
+    float cx = newX + sign * WR_SIGN(dx) * WR_PLAYER_COLLISION_RADIUS;
+    if (!IsMapCellSolid(m, (int)floorf(cx), (int)floorf(p->pos.y - WR_PLAYER_COLLISION_RADIUS)) &&
+        !IsMapCellSolid(m, (int)floorf(cx), (int)floorf(p->pos.y + WR_PLAYER_COLLISION_RADIUS))) {
+            p->pos.x = newX;
+        }
+
+    float newY = p->pos.y + sign * dy;
+    float cy = newY + sign * WR_SIGN(dy) * WR_PLAYER_COLLISION_RADIUS;
+    if (!IsMapCellSolid(m, (int)floorf(p->pos.x - WR_PLAYER_COLLISION_RADIUS), (int)floorf(cy)) &&
+        !IsMapCellSolid(m, (int)floorf(p->pos.x + WR_PLAYER_COLLISION_RADIUS), (int)floorf(cy))) {
+            p->pos.y = newY;
+        }
 }
