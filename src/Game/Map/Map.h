@@ -1,8 +1,9 @@
 #ifndef WR_MAP_H
 #define WR_MAP_H
 
-#include <stdbool.h>
 #include "Utils/Math.h"
+
+#include <stdbool.h>
 
 typedef struct {
     int* data;
