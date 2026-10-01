@@ -12,10 +12,9 @@ int main(int argc, char const* argv[]) {
     SetTargetFPS(60);
 
     Game* game = CreateGame();
-    if (!game) return -1;
-
     Renderer* renderer = CreateRenderer();
-    if (!renderer) return -1;
+
+    if (!game || !renderer) goto cleanup;
 
     while (!WindowShouldClose()) {
         float dt = GetFrameTime();
@@ -26,6 +25,8 @@ int main(int argc, char const* argv[]) {
         
         RenderGame(renderer, game);
     }
+    
+    cleanup:
 
     DestroyRenderer(renderer);
     renderer = NULL;
