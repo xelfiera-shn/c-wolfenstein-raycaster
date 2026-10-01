@@ -4,7 +4,7 @@
 #define WR_PI 3.1415927f
 #define WR_SIGN(val) ((val) >= 0 ? 1 : -1)
 
-typedef struct {
+typedef struct WrVector2 {
     float x, y;
 } WrVector2;
 

@@ -11,7 +11,7 @@ typedef enum {
     WR_HIT_COUNT
 } WrHitType;
 
-typedef struct {
+typedef struct WrRay {
     WrVector2 pos;
     float dist;
     WrHitType hit;
