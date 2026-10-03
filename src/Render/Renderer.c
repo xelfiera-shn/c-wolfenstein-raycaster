@@ -1,4 +1,5 @@
 #include "Renderer.h"
+#include "Core/Constants.h"
 #include "Raycast/Ray.h"
 #include "Raycast/Raycast.h"
 #include "Game/Game.h"
@@ -9,8 +10,14 @@
 struct WrRenderer {
     int screenWidth;  // Width of window screen
     int screenHeight; // Height of window screen
+
+    int rayCount; // Count of rays (same as inner width but that's understandable then)
     WrRay* rays;
-    int rayCount; // Count of rays (same as screen width but that's understandable then)
+
+    int innerWidth;
+    int innerHeight;
+    Color* pixels; // Unsigned char R, G, B, A
+    Texture2D frame;
 };
 
 WrRenderer* CreateRenderer(void) {
@@ -19,13 +26,30 @@ WrRenderer* CreateRenderer(void) {
 
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
-    r->rayCount = r->screenWidth;
-    r->rays = calloc(r->rayCount, sizeof *r->rays);
+    r->rayCount = WR_INNER_WIDTH;
 
+    r->rays = calloc(r->rayCount, sizeof *r->rays);
     if (!r->rays) {
         free(r);
-        r = NULL;
+
+        return NULL;
     }
+
+    r->innerWidth = WR_INNER_WIDTH;
+    r->innerHeight = WR_INNER_HEIGHT;
+
+    r->pixels = calloc(r->innerWidth * r->innerHeight, sizeof *r->pixels);
+    if (!r->pixels) {
+        free(r->rays);
+        free(r);
+
+        return NULL;
+    }
+
+    Image img = GenImageColor(r->innerWidth, r->innerHeight, BLACK);
+    r->frame = LoadTextureFromImage(img);
+
+    UnloadImage(img);
 
     return r;
 }
@@ -33,6 +57,8 @@ WrRenderer* CreateRenderer(void) {
 void DestroyRenderer(WrRenderer* r) {
     if (!r) return;
 
+    UnloadTexture(r->frame);
+    free(r->pixels);
     free(r->rays);
     free(r);
 }
@@ -43,15 +69,7 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
 
     if (sw <= 0 || sh <= 0) return;
 
-    if (r->screenWidth != sw) {
-        WrRay* tmp = realloc(r->rays, (size_t)sw * sizeof *tmp);
-        if (!tmp) return;
-
-        r->rays = tmp;
-        r->rayCount = sw;
-        r->screenWidth = sw;
-    }
-
+    if (r->screenWidth != sw) r->screenWidth = sw;
     if (r->screenHeight != sh) r->screenHeight = sh;
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
@@ -80,7 +98,7 @@ static void RenderView(const WrRay* rays, int count, int sw, int sh) {
         float h = sh / ray->dist;
         if (h > sh) h = (float)sh;
 
-        int rectStartY = (int)(sh - h) / 2;
+        int rectStartY = (int)((sh - h) / 2.f);
         Color col = ray->hit == WR_HIT_VERTICAL ? DARKPURPLE : PURPLE;
 
         DrawRectangle(i, rectStartY, 1, (int)h, col);
