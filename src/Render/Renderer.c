@@ -63,6 +63,8 @@ void DestroyRenderer(WrRenderer* r) {
     free(r);
 }
 
+static void DrawViewToFramebuffer(Color* framebuffer, int innerWidth, int innerHeight, const WrRay* rays, int count);
+
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
     int sh = GetScreenHeight();
@@ -73,35 +75,52 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     if (r->screenHeight != sh) r->screenHeight = sh;
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
+
+    DrawViewToFramebuffer(r->pixels, r->innerWidth, r->innerHeight, r->rays, r->rayCount);
+    UpdateTexture(r->frame, r->pixels);
 }
 
-static void RenderView(const WrRay* rays, int count, int sw, int sh);
 static void RenderMinimap(const WrRenderer* r, const WrGame* g);
 
 void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
 
-    RenderView(r->rays, r->rayCount, r->screenWidth, r->screenHeight);
+    SetTextureFilter(r->frame, TEXTURE_FILTER_POINT);
+    DrawTexturePro(r->frame, (Rectangle){0.f, 0.f, (float)r->innerWidth, (float)r->innerHeight},
+                   (Rectangle){0.f, 0.f, (float)r->screenWidth, (float)r->screenHeight}, (Vector2){0.f, 0.f}, 0.f,
+                   WHITE);
+
     RenderMinimap(r, g);
 
     DrawFPS(10, 10);
     EndDrawing();
 }
 
-static void RenderView(const WrRay* rays, int count, int sw, int sh) {
-    DrawRectangle(0, 0, sw, sh / 2, SKYBLUE);
-    DrawRectangle(0, sh / 2, sw, sh / 2, BEIGE);
+static void DrawViewToFramebuffer(Color* framebuffer, int width, int height, const WrRay* rays, int count) {
+    for (int y = 0; y < height / 2; y++) {
+        for (int x = 0; x < width; x++) {
+            framebuffer[y * width + x] = SKYBLUE;
+        }
+    }
+
+    for (int y = height / 2; y < height; y++) {
+        for (int x = 0; x < width; x++) {
+            framebuffer[y * width + x] = BEIGE;
+        }
+    }
 
     for (int i = 0; i < count; i++) {
         const WrRay* ray = &rays[i];
 
-        float h = sh / ray->dist;
-        if (h > sh) h = (float)sh;
+        float h = height / ray->dist;
+        if (h > height) h = (float)height;
 
-        int rectStartY = (int)((sh - h) / 2.f);
+        int rectStartY = (int)((height - h) / 2.f);
         Color col = ray->hit == WR_HIT_VERTICAL ? DARKPURPLE : PURPLE;
 
-        DrawRectangle(i, rectStartY, 1, (int)h, col);
+        for (int y = rectStartY; y < rectStartY + h; y++) {
+            framebuffer[y * width + i] = col;
+        }
     }
 }
 
