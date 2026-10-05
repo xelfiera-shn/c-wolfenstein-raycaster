@@ -15,7 +15,7 @@ typedef struct WrRenderer {
     int rayCount; // Count of rays (same as inner width but that's understandable then)
     WrRay* rays;
 
-    Framebuffer fb;
+    WrFramebuffer fb;
 } WrRenderer;
 
 bool InitRenderer(WrRenderer* r);

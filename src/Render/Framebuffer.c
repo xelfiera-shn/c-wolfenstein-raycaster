@@ -2,7 +2,7 @@
 
 #include <stdlib.h>
 
-bool InitFramebuffer(Framebuffer* fb, int width, int height) {
+bool InitFramebuffer(WrFramebuffer* fb, int width, int height) {
     fb->width = width;
     fb->height = height;
 
@@ -18,7 +18,7 @@ bool InitFramebuffer(Framebuffer* fb, int width, int height) {
     return true;
 }
 
-void TerminateFramebuffer(Framebuffer* fb) {
+void TerminateFramebuffer(WrFramebuffer* fb) {
     if (!fb) return;
 
     UnloadTexture(fb->frame);

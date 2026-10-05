@@ -4,14 +4,14 @@
 #include <stdbool.h>
 #include <raylib.h>
 
-typedef struct Framebuffer {
+typedef struct WrFramebuffer {
     int width;
     int height;
     Texture2D frame;
     Color* buffer;
-} Framebuffer;
+} WrFramebuffer;
 
-bool InitFramebuffer(Framebuffer* fb, int width, int height);
-void TerminateFramebuffer(Framebuffer* fb);
+bool InitFramebuffer(WrFramebuffer* fb, int width, int height);
+void TerminateFramebuffer(WrFramebuffer* fb);
 
 #endif // WR_FRAMEBUFFER_H
