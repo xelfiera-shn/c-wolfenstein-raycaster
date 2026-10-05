@@ -9,17 +9,17 @@
 int main(int argc, char const* argv[]) {
     ((void)argc, (void)argv);
 
+    int exitCode = EXIT_FAILURE;
+
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WR_SCREEN_DEFAULT_WIDTH, WR_SCREEN_DEFAULT_HEIGHT, "C Wolfenstein Raycaster");
     SetTargetFPS(60);
 
-    WrInput input;
+    WrInput input = {0};
+    WrGame game = {0};
+    WrRenderer renderer = {0};
 
-    WrGame game;
-    InitGame(&game);
-
-    WrRenderer renderer;
-    InitRenderer(&renderer);
+    if (!InitGame(&game) || !InitRenderer(&renderer)) goto cleanup;
 
     while (!WindowShouldClose()) {
         HandleInputs(&input);
@@ -39,10 +39,13 @@ int main(int argc, char const* argv[]) {
         RenderGame(&renderer, &game);
     }
 
+    exitCode = EXIT_SUCCESS;
+
+cleanup:
     TerminateRenderer(&renderer);
     TerminateGame(&game);
 
     CloseWindow();
 
-    return 0;
+    return exitCode;
 }
