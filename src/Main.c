@@ -7,9 +7,7 @@
 #include <raylib.h>
 
 int main(int argc, char const* argv[]) {
-    (void)argc;
-    (void)argv;
-    int exitCode = EXIT_FAILURE;
+    ((void)argc, (void)argv);
 
     SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(WR_SCREEN_DEFAULT_WIDTH, WR_SCREEN_DEFAULT_HEIGHT, "C Wolfenstein Raycaster");
@@ -17,10 +15,11 @@ int main(int argc, char const* argv[]) {
 
     WrInput input;
 
-    WrGame* game = CreateGame();
-    WrRenderer* renderer = CreateRenderer();
+    WrGame game;
+    InitGame(&game);
 
-    if (!game || !renderer) goto cleanup;
+    WrRenderer renderer;
+    InitRenderer(&renderer);
 
     while (!WindowShouldClose()) {
         HandleInputs(&input);
@@ -34,22 +33,16 @@ int main(int argc, char const* argv[]) {
             dt = 0.1f;
         }
 
-        UpdateGame(game, &input, dt);
-        UpdateRenderer(renderer, game);
+        UpdateGame(&game, &input, dt);
+        UpdateRenderer(&renderer, &game);
 
-        RenderGame(renderer, game);
+        RenderGame(&renderer, &game);
     }
 
-    exitCode = EXIT_SUCCESS;
-
-cleanup:
-    DestroyRenderer(renderer);
-    renderer = NULL;
-
-    DestroyGame(game);
-    game = NULL;
+    TerminateRenderer(&renderer);
+    TerminateGame(&game);
 
     CloseWindow();
 
-    return exitCode;
+    return 0;
 }

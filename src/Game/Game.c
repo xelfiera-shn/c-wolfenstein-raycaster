@@ -7,29 +7,23 @@
 #include <stdbool.h>
 #include <math.h>
 
-WrGame* CreateGame(void) {
-    WrGame* g = calloc(1, sizeof *g);
-    if (!g) return NULL;
+static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isForward);
 
-    if (!InitDefaultMap(&g->map)) {
-        free(g);
+bool InitGame(WrGame* g) {
+    if (!g) return false;
 
-        return NULL;
-    }
+    if (!InitDefaultMap(&g->map)) return false;
 
     InitPlayer(&g->player, &g->map);
 
-    return g;
+    return true;
 }
 
-void DestroyGame(WrGame* g) {
+void TerminateGame(WrGame* g) {
     if (!g) return;
 
     TerminateMap(&g->map);
-    free(g);
 }
-
-static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isForward);
 
 void UpdateGame(WrGame* g, WrInput* in, float dt) {
     WrMap* m = &g->map;

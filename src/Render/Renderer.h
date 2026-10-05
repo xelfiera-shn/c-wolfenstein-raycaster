@@ -1,11 +1,25 @@
 #ifndef WR_RENDERER_H
 #define WR_RENDERER_H
 
-typedef struct WrRenderer WrRenderer;
+#include "Raycast/Ray.h"
+#include "Framebuffer.h"
+
+#include <stdbool.h>
+
 typedef struct WrGame WrGame;
 
-WrRenderer* CreateRenderer(void);
-void DestroyRenderer(WrRenderer* r);
+typedef struct WrRenderer {
+    int screenWidth;  // Width of window screen
+    int screenHeight; // Height of window screen
+
+    int rayCount; // Count of rays (same as inner width but that's understandable then)
+    WrRay* rays;
+
+    Framebuffer fb;
+} WrRenderer;
+
+bool InitRenderer(WrRenderer* r);
+void TerminateRenderer(WrRenderer* r);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g);
 void RenderGame(const WrRenderer* r, const WrGame* g);

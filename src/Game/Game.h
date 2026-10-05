@@ -4,6 +4,8 @@
 #include "Map/Map.h"
 #include "Player/Player.h"
 
+#include <stdbool.h>
+
 typedef struct WrInput WrInput;
 
 typedef struct WrGame {
@@ -11,8 +13,8 @@ typedef struct WrGame {
     WrPlayer player;
 } WrGame;
 
-WrGame* CreateGame(void);
-void DestroyGame(WrGame* g);
+bool InitGame(WrGame* g);
+void TerminateGame(WrGame* g);
 
 void UpdateGame(WrGame* g, WrInput* in, float dt);
 

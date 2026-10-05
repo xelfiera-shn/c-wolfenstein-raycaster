@@ -2,64 +2,33 @@
 #include "Core/Constants.h"
 #include "Raycast/Ray.h"
 #include "Raycast/Raycast.h"
-#include "Framebuffer.h"
 #include "Game/Game.h"
 
 #include <stdlib.h>
 #include <raylib.h>
 
-struct WrRenderer {
-    int screenWidth;  // Width of window screen
-    int screenHeight; // Height of window screen
-
-    int rayCount; // Count of rays (same as inner width but that's understandable then)
-    WrRay* rays;
-
-    Framebuffer fb;
-};
-
-WrRenderer* CreateRenderer(void) {
-    WrRenderer* r = calloc(1, sizeof *r);
-    if (!r) return NULL;
-
+bool InitRenderer(WrRenderer* r) {
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
     r->rayCount = WR_INNER_WIDTH;
 
     r->rays = calloc(r->rayCount, sizeof *r->rays);
-    if (!r->rays) {
-        free(r);
+    if (!r->rays) return false;
 
-        return NULL;
-    }
-
-    r->fb.width = WR_INNER_WIDTH;
-    r->fb.height = WR_INNER_HEIGHT;
-
-    r->fb.buffer = calloc(r->fb.width * r->fb.height, sizeof *r->fb.buffer);
-    if (!r->fb.buffer) {
+    if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT)) {
         free(r->rays);
-        free(r);
 
-        return NULL;
+        return false;
     }
 
-    Image img = GenImageColor(r->fb.width, r->fb.height, BLACK);
-    r->fb.frame = LoadTextureFromImage(img);
-    UnloadImage(img);
-
-    SetTextureFilter(r->fb.frame, TEXTURE_FILTER_POINT);
-
-    return r;
+    return true;
 }
 
-void DestroyRenderer(WrRenderer* r) {
+void TerminateRenderer(WrRenderer* r) {
     if (!r) return;
 
-    UnloadTexture(r->fb.frame);
-    free(r->fb.buffer);
+    TerminateFramebuffer(&r->fb);
     free(r->rays);
-    free(r);
 }
 
 static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count);
