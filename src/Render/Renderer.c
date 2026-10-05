@@ -2,6 +2,7 @@
 #include "Core/Constants.h"
 #include "Raycast/Ray.h"
 #include "Raycast/Raycast.h"
+#include "Framebuffer.h"
 #include "Game/Game.h"
 
 #include <stdlib.h>
@@ -14,10 +15,7 @@ struct WrRenderer {
     int rayCount; // Count of rays (same as inner width but that's understandable then)
     WrRay* rays;
 
-    int innerWidth;
-    int innerHeight;
-    Color* pixels; // Unsigned char R, G, B, A
-    Texture2D frame;
+    Framebuffer fb;
 };
 
 WrRenderer* CreateRenderer(void) {
@@ -35,21 +33,22 @@ WrRenderer* CreateRenderer(void) {
         return NULL;
     }
 
-    r->innerWidth = WR_INNER_WIDTH;
-    r->innerHeight = WR_INNER_HEIGHT;
+    r->fb.width = WR_INNER_WIDTH;
+    r->fb.height = WR_INNER_HEIGHT;
 
-    r->pixels = calloc(r->innerWidth * r->innerHeight, sizeof *r->pixels);
-    if (!r->pixels) {
+    r->fb.buffer = calloc(r->fb.width * r->fb.height, sizeof *r->fb.buffer);
+    if (!r->fb.buffer) {
         free(r->rays);
         free(r);
 
         return NULL;
     }
 
-    Image img = GenImageColor(r->innerWidth, r->innerHeight, BLACK);
-    r->frame = LoadTextureFromImage(img);
-
+    Image img = GenImageColor(r->fb.width, r->fb.height, BLACK);
+    r->fb.frame = LoadTextureFromImage(img);
     UnloadImage(img);
+
+    SetTextureFilter(r->fb.frame, TEXTURE_FILTER_POINT);
 
     return r;
 }
@@ -57,13 +56,13 @@ WrRenderer* CreateRenderer(void) {
 void DestroyRenderer(WrRenderer* r) {
     if (!r) return;
 
-    UnloadTexture(r->frame);
-    free(r->pixels);
+    UnloadTexture(r->fb.frame);
+    free(r->fb.buffer);
     free(r->rays);
     free(r);
 }
 
-static void DrawViewToFramebuffer(Color* framebuffer, int innerWidth, int innerHeight, const WrRay* rays, int count);
+static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -76,8 +75,8 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
 
-    DrawViewToFramebuffer(r->pixels, r->innerWidth, r->innerHeight, r->rays, r->rayCount);
-    UpdateTexture(r->frame, r->pixels);
+    DrawViewToFramebuffer(r->fb.buffer, r->fb.width, r->fb.height, r->rays, r->rayCount);
+    UpdateTexture(r->fb.frame, r->fb.buffer);
 }
 
 static void RenderMinimap(const WrRenderer* r, const WrGame* g);
@@ -85,8 +84,7 @@ static void RenderMinimap(const WrRenderer* r, const WrGame* g);
 void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
 
-    SetTextureFilter(r->frame, TEXTURE_FILTER_POINT);
-    DrawTexturePro(r->frame, (Rectangle){0.f, 0.f, (float)r->innerWidth, (float)r->innerHeight},
+    DrawTexturePro(r->fb.frame, (Rectangle){0.f, 0.f, (float)r->fb.width, (float)r->fb.height},
                    (Rectangle){0.f, 0.f, (float)r->screenWidth, (float)r->screenHeight}, (Vector2){0.f, 0.f}, 0.f,
                    WHITE);
 
@@ -96,16 +94,16 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
     EndDrawing();
 }
 
-static void DrawViewToFramebuffer(Color* framebuffer, int width, int height, const WrRay* rays, int count) {
+static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count) {
     for (int y = 0; y < height / 2; y++) {
         for (int x = 0; x < width; x++) {
-            framebuffer[y * width + x] = SKYBLUE;
+            buffer[y * width + x] = SKYBLUE;
         }
     }
 
     for (int y = height / 2; y < height; y++) {
         for (int x = 0; x < width; x++) {
-            framebuffer[y * width + x] = BEIGE;
+            buffer[y * width + x] = BEIGE;
         }
     }
 
@@ -119,7 +117,7 @@ static void DrawViewToFramebuffer(Color* framebuffer, int width, int height, con
         Color col = ray->hit == WR_HIT_VERTICAL ? DARKPURPLE : PURPLE;
 
         for (int y = rectStartY; y < rectStartY + h; y++) {
-            framebuffer[y * width + i] = col;
+            buffer[y * width + i] = col;
         }
     }
 }
