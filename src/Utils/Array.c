@@ -28,7 +28,7 @@ void DestroyArray(WrArray* arr) {
 
 void Push(WrArray* arr, int item) {
     if (arr->size == arr->capacity) {
-        int newCap = arr->capacity << 1;
+        size_t newCap = arr->capacity << 1;
 
         int* tmp = realloc(arr->array, newCap * sizeof *arr->array);
         if (!tmp) {
