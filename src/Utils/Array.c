@@ -10,10 +10,10 @@ bool InitArray(WrArray* arr) {
     if (!arr->data) {
         free(arr);
 
-        return NULL;
+        return false;
     }
 
-    return arr;
+    return true;
 }
 
 void TerminateArray(WrArray* arr) {
