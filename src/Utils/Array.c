@@ -2,15 +2,12 @@
 
 #define INITIAL_ARRAY_SIZE 8
 
-WrArray* CreateArray(void) {
-    WrArray* arr = malloc(sizeof *arr);
-    if (!arr) return NULL;
-
+bool InitArray(WrArray* arr) {
     arr->size = 0;
     arr->capacity = INITIAL_ARRAY_SIZE;
 
-    arr->array = malloc(INITIAL_ARRAY_SIZE * sizeof *arr->array);
-    if (!arr->array) {
+    arr->data = malloc(INITIAL_ARRAY_SIZE * sizeof *arr->data);
+    if (!arr->data) {
         free(arr);
 
         return NULL;
@@ -19,47 +16,53 @@ WrArray* CreateArray(void) {
     return arr;
 }
 
-void DestroyArray(WrArray* arr) {
+void TerminateArray(WrArray* arr) {
     if (!arr) return;
 
-    free(arr->array);
+    free(arr->data);
     free(arr);
 }
 
-void Push(WrArray* arr, int item) {
+bool ArrayPush(WrArray* arr, int item) {
     if (arr->size == arr->capacity) {
         size_t newCap = arr->capacity << 1;
 
-        int* tmp = realloc(arr->array, newCap * sizeof *arr->array);
+        int* tmp = realloc(arr->data, newCap * sizeof *arr->data);
         if (!tmp) {
-            return;
+            return false;
         }
 
-        arr->array = tmp;
+        arr->data = tmp;
         arr->capacity = newCap;
     }
 
-    arr->array[arr->size++] = item;
+    arr->data[arr->size++] = item;
+
+    return true;
 }
 
-void Update(WrArray* arr, int idx, int item) {
-    if (idx < 0 || idx >= arr->size) return;
+bool ArrayUpdate(WrArray* arr, int idx, int item) {
+    if (idx < 0 || idx >= arr->size) return false;
 
-    arr->array[idx] = item;
+    arr->data[idx] = item;
+
+    return true;
 }
 
-int Get(const WrArray* arr, int idx) {
+int ArrayGet(const WrArray* arr, int idx) {
     if (idx < 0 || idx >= arr->size) return -1;
 
-    return arr->array[idx];
+    return arr->data[idx];
 }
 
-void Delete(WrArray* arr, int idx) {
-    if (idx < 0 || idx >= arr->size) return;
+bool ArrayDelete(WrArray* arr, int idx) {
+    if (idx < 0 || idx >= arr->size) return false;
 
     for (int i = idx; i < arr->size - 1; i++) {
-        arr->array[i] = arr->array[i + 1];
+        arr->data[i] = arr->data[i + 1];
     }
 
     arr->size--;
+
+    return true;
 }

@@ -2,19 +2,20 @@
 #define WR_ARRAY_H
 
 #include <stdlib.h>
+#include <stdbool.h>
 
 typedef struct WrArray {
     size_t capacity;
     size_t size;
-    int* array;
+    int* data;
 } WrArray;
 
-WrArray* CreateArray(void);
-void DestroyArray(WrArray* arr);
+bool InitArray(WrArray* arr);
+void TerminateArray(WrArray* arr);
 
-void Push(WrArray* arr, int item);
-void Update(WrArray* arr, int idx, int item);
-int Get(const WrArray* arr, int idx);
-void Delete(WrArray* arr, int idx);
+bool ArrayPush(WrArray* arr, int item);
+bool ArrayUpdate(WrArray* arr, int idx, int item);
+int ArrayGet(const WrArray* arr, int idx);
+bool ArrayDelete(WrArray* arr, int idx);
 
 #endif // WR_ARRAY_H
