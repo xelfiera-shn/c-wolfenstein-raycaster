@@ -1,0 +1,80 @@
+#ifndef WR_TEXTURE_H
+#define WR_TEXTURE_H
+
+#include <stdbool.h>
+
+typedef enum {
+    WR_TEXTURE_BRICK_1 = 1,
+    WR_TEXTURE_BRICK_2 = 2,
+    WR_TEXTURE_BRICK_3 = 3,
+    WR_TEXTURE_BRICK_4 = 4,
+    WR_TEXTURE_BRICK_5 = 5,
+    WR_TEXTURE_BRICK_6 = 6,
+    WR_TEXTURE_BRICK_7 = 7,
+    WR_TEXTURE_BRICK_8 = 8,
+
+    WR_TEXTURE_CURSED_1 = 9,
+    WR_TEXTURE_CURSED_2 = 10,
+    WR_TEXTURE_CURSED_3 = 11,
+    WR_TEXTURE_CURSED_4 = 12,
+    WR_TEXTURE_CURSED_5 = 13,
+    WR_TEXTURE_CURSED_6 = 14,
+
+    WR_TEXTURE_DOORS_1 = 15,
+    WR_TEXTURE_DOORS_2 = 16,
+    WR_TEXTURE_DOORS_3 = 17,
+    WR_TEXTURE_DOORS_4 = 18,
+    WR_TEXTURE_DOORS_5 = 19,
+    WR_TEXTURE_DOORS_6 = 20,
+    WR_TEXTURE_DOORS_7 = 21,
+    WR_TEXTURE_DOORS_8 = 22,
+    WR_TEXTURE_DOORS_9 = 23,
+    WR_TEXTURE_DOORS_10 = 24,
+
+    WR_TEXTURE_SCENERY_1 = 25,
+    WR_TEXTURE_SCENERY_2 = 26,
+
+    WR_TEXTURE_STONE_1 = 27,
+    WR_TEXTURE_STONE_2 = 28,
+    WR_TEXTURE_STONE_3 = 29,
+    WR_TEXTURE_STONE_4 = 30,
+    WR_TEXTURE_STONE_5 = 31,
+    WR_TEXTURE_STONE_6 = 32,
+    WR_TEXTURE_STONE_7 = 33,
+    WR_TEXTURE_STONE_8 = 34,
+    WR_TEXTURE_STONE_9 = 35,
+    WR_TEXTURE_STONE_10 = 36,
+    WR_TEXTURE_STONE_11 = 37,
+
+    WR_TEXTURE_TILES_1 = 38,
+    WR_TEXTURE_TILES_2 = 39,
+    WR_TEXTURE_TILES_3 = 40,
+    WR_TEXTURE_TILES_4 = 41,
+    WR_TEXTURE_TILES_5 = 42,
+    WR_TEXTURE_TILES_6 = 43,
+    WR_TEXTURE_TILES_7 = 44,
+    WR_TEXTURE_TILES_8 = 45,
+    WR_TEXTURE_TILES_9 = 46,
+    WR_TEXTURE_TILES_10 = 47,
+    WR_TEXTURE_TILES_11 = 48,
+
+    WR_TEXTURE_WOOD_1 = 49,
+    WR_TEXTURE_WOOD_2 = 50,
+    WR_TEXTURE_WOOD_3 = 51,
+    WR_TEXTURE_WOOD_4 = 52,
+
+    WR_TEXTURE_COUNT
+} WrTextureType;
+
+typedef struct Color Color;
+
+typedef struct WrTexture {
+    int width;
+    int height;
+    Color* data;
+} WrTexture;
+
+bool InitTexture(WrTexture* texture, const char* path);
+void TerminateTexture(WrTexture* texture);
+
+#endif // WR_TEXTURE_H
