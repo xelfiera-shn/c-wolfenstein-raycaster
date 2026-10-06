@@ -5,20 +5,29 @@
 
 #include <stdbool.h>
 
-#define WR_LEFT_MOUSE_BUTTON 0
-#define WR_RIGHT_MOUSE_BUTTON 1
+typedef enum {
+    WR_MOUSE_BUTTON_LEFT = 0,
+    WR_MOUSE_BUTTON_RIGHT = 1,
 
-#define WR_KEY_ESC 0
-#define WR_KEY_W 1
-#define WR_KEY_A 2
-#define WR_KEY_S 3
-#define WR_KEY_D 4
-#define WR_KEY_E 5
+    WR_MOUSE_BUTTON_COUNT
+} WrMouseButtons;
+
+typedef enum {
+    WR_KEY_ESC = 0,
+    WR_KEY_W = 1,
+    WR_KEY_A = 2,
+    WR_KEY_S = 3,
+    WR_KEY_D = 4,
+    WR_KEY_E = 5,
+
+    WR_KEY_COUNT
+} WrKeys;
 
 typedef struct WrInput {
     WrVector2 mouseDelta;
-    bool mouseButtons[2];
-    bool keys[64];
+    bool mouseButtons[WR_MOUSE_BUTTON_COUNT];
+    bool pressedKeys[WR_KEY_COUNT];
+    bool downedKeys[WR_KEY_COUNT];
 } WrInput;
 
 void HandleInputs(WrInput* in);

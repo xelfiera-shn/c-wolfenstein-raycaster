@@ -29,11 +29,11 @@ void UpdateGame(WrGame* g, WrInput* in, float dt) {
     WrMap* m = &g->map;
     WrPlayer* p = &g->player;
 
-    if (in->keys[WR_KEY_A]) {
+    if (in->downedKeys[WR_KEY_A]) {
         RotateVector(&p->dir, -WR_PLAYER_TURN_SPEED * dt);
     }
 
-    if (in->keys[WR_KEY_D]) {
+    if (in->downedKeys[WR_KEY_D]) {
         RotateVector(&p->dir, WR_PLAYER_TURN_SPEED * dt);
     }
 
@@ -42,11 +42,11 @@ void UpdateGame(WrGame* g, WrInput* in, float dt) {
     float playerMoveDeltaX = p->dir.x * WR_PLAYER_MOVE_SPEED * dt;
     float playerMoveDeltaY = p->dir.y * WR_PLAYER_MOVE_SPEED * dt;
 
-    if (in->keys[WR_KEY_W]) {
+    if (in->downedKeys[WR_KEY_W]) {
         MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, true);
     }
 
-    if (in->keys[WR_KEY_S]) {
+    if (in->downedKeys[WR_KEY_S]) {
         MovePlayer(p, m, playerMoveDeltaX, playerMoveDeltaY, false);
     }
 }
