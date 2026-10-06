@@ -25,7 +25,7 @@ void TerminateGame(WrGame* g) {
     TerminateMap(&g->map);
 }
 
-void UpdateGame(WrGame* g, WrInput* in, float dt) {
+void UpdateGame(WrGame* g, const WrInput* in, float dt) {
     WrMap* m = &g->map;
     WrPlayer* p = &g->player;
 

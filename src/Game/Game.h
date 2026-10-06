@@ -16,6 +16,6 @@ typedef struct WrGame {
 bool InitGame(WrGame* g);
 void TerminateGame(WrGame* g);
 
-void UpdateGame(WrGame* g, WrInput* in, float dt);
+void UpdateGame(WrGame* g, const WrInput* in, float dt);
 
 #endif // WR_GAME_H
