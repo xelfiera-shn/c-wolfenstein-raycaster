@@ -15,9 +15,13 @@ bool InitRenderer(WrRenderer* r) {
     r->rays = calloc(r->rayCount, sizeof *r->rays);
     if (!r->rays) return false;
 
+    InitTextures(r->textures);
+
     if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT)) {
         free(r->rays);
         r->rays = NULL;
+
+        TerminateTextures(r->textures);
 
         return false;
     }
@@ -31,6 +35,8 @@ void TerminateRenderer(WrRenderer* r) {
     TerminateFramebuffer(&r->fb);
     free(r->rays);
     r->rays = NULL;
+
+    TerminateTextures(r->textures);
 }
 
 static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count);

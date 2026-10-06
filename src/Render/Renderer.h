@@ -2,6 +2,7 @@
 #define WR_RENDERER_H
 
 #include "Raycast/Ray.h"
+#include "Texture.h"
 #include "Framebuffer.h"
 
 #include <stdbool.h>
@@ -14,6 +15,8 @@ typedef struct WrRenderer {
 
     int rayCount; // Count of rays (same as inner width but that's understandable then)
     WrRay* rays;
+
+    WrTexture textures[WR_TEXTURE_COUNT];
 
     WrFramebuffer fb;
 } WrRenderer;
