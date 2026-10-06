@@ -11,6 +11,14 @@ bool InitFramebuffer(WrFramebuffer* fb, int width, int height) {
 
     Image img = GenImageColor(fb->width, fb->height, BLACK);
     fb->frame = LoadTextureFromImage(img);
+
+    if (fb->frame.id == 0) {
+        free(fb->buffer);
+        fb->buffer = NULL;
+
+        return false;
+    }
+
     UnloadImage(img);
 
     SetTextureFilter(fb->frame, TEXTURE_FILTER_POINT);
@@ -23,4 +31,5 @@ void TerminateFramebuffer(WrFramebuffer* fb) {
 
     UnloadTexture(fb->frame);
     free(fb->buffer);
+    fb->buffer = NULL;
 }

@@ -9,11 +9,7 @@ bool InitArray(WrArray* arr) {
     arr->capacity = INITIAL_ARRAY_SIZE;
 
     arr->data = malloc(INITIAL_ARRAY_SIZE * sizeof *arr->data);
-    if (!arr->data) {
-        free(arr);
-
-        return false;
-    }
+    if (!arr->data) return false;
 
     return true;
 }
@@ -22,7 +18,7 @@ void TerminateArray(WrArray* arr) {
     if (!arr) return;
 
     free(arr->data);
-    free(arr);
+    arr->data = NULL;
 }
 
 bool ArrayPush(WrArray* arr, int item) {

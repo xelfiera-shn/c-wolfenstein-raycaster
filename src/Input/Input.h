@@ -27,7 +27,7 @@ typedef struct WrInput {
     WrVector2 mouseDelta;
     bool mouseButtons[WR_MOUSE_BUTTON_COUNT];
     bool pressedKeys[WR_KEY_COUNT];
-    bool downedKeys[WR_KEY_COUNT];
+    bool heldKeys[WR_KEY_COUNT];
 } WrInput;
 
 void HandleInputs(WrInput* in);

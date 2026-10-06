@@ -17,6 +17,7 @@ bool InitRenderer(WrRenderer* r) {
 
     if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT)) {
         free(r->rays);
+        r->rays = NULL;
 
         return false;
     }
@@ -29,6 +30,7 @@ void TerminateRenderer(WrRenderer* r) {
 
     TerminateFramebuffer(&r->fb);
     free(r->rays);
+    r->rays = NULL;
 }
 
 static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count);
@@ -39,8 +41,10 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
 
     if (sw <= 0 || sh <= 0) return;
 
-    if (r->screenWidth != sw) r->screenWidth = sw;
-    if (r->screenHeight != sh) r->screenHeight = sh;
+    if (r->screenWidth != sw || r->screenHeight != sh) {
+        r->screenWidth = sw;
+        r->screenHeight = sh;
+    }
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
 
@@ -52,6 +56,7 @@ static void RenderMinimap(const WrRenderer* r, const WrGame* g);
 
 void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
+    ClearBackground(BLACK);
 
     float scale = WR_MIN((float)r->screenWidth / r->fb.width, (float)r->screenHeight / r->fb.height);
     float dstWidth = r->fb.width * scale;

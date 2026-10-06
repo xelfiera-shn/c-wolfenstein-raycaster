@@ -7,7 +7,8 @@
 #include <raylib.h>
 
 int main(int argc, char const* argv[]) {
-    ((void)argc, (void)argv);
+    (void)argc;
+    (void)argv;
 
     int exitCode = EXIT_FAILURE;
 
@@ -25,7 +26,7 @@ int main(int argc, char const* argv[]) {
         HandleInputs(&input);
 
         float dt = GetFrameTime();
-        if (dt > 0.1f) dt = 0.1f; // If fps less than 10, fix delta time and inputs
+        if (dt > 0.1f) dt = 0.1f; // If fps less than 10, fix delta time
 
         UpdateGame(&game, &input, dt);
         UpdateRenderer(&renderer, &game);
