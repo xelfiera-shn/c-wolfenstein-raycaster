@@ -1,5 +1,7 @@
 #include "Array.h"
 
+#include <stdlib.h>
+
 #define INITIAL_ARRAY_SIZE 8
 
 bool InitArray(WrArray* arr) {

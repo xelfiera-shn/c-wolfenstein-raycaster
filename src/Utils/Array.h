@@ -1,7 +1,7 @@
 #ifndef WR_ARRAY_H
 #define WR_ARRAY_H
 
-#include <stdlib.h>
+#include <stddef.h>
 #include <stdbool.h>
 
 typedef struct WrArray {
