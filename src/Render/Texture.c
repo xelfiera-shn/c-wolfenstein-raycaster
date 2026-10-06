@@ -1,5 +1,7 @@
 #include "Texture.h"
 
+#include <string.h>
+
 // clang-format off
 static const char* const WR_TEXTURE_PATHS[WR_TEXTURE_COUNT] = {
     [WR_TEXTURE_NONE] = "",
@@ -76,14 +78,20 @@ void TerminateTextures(WrTexture* textures) {
 }
 
 static void InitTexture(WrTexture* texture, const char* path) {
-    Image img = LoadImage(path);
-
-    texture->data = LoadImageColors(img);
-    if (!texture->data) {
-        UnloadImage(img);
-
+    Image img;
+    if (!strcmp(path, "")) {
         img = GenImageChecked(WR_DEFAULT_TEXTURE_SIZE, WR_DEFAULT_TEXTURE_SIZE, 8, 8, BLACK, PURPLE);
         texture->data = LoadImageColors(img);
+    } else {
+        img = LoadImage(path);
+
+        texture->data = LoadImageColors(img);
+        if (!texture->data) {
+            UnloadImage(img);
+
+            img = GenImageChecked(WR_DEFAULT_TEXTURE_SIZE, WR_DEFAULT_TEXTURE_SIZE, 8, 8, BLACK, PURPLE);
+            texture->data = LoadImageColors(img);
+        }
     }
 
     texture->width = img.width;
