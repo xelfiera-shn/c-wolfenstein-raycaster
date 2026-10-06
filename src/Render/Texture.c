@@ -58,17 +58,19 @@ static const char* const WR_TEXTURE_PATHS[WR_TEXTURE_COUNT] = {
 };
 // clang-format on
 
+#define WR_DEFAULT_TEXTURE_SIZE 64
+
 static void InitTexture(WrTexture* texture, const char* path);
 static void TerminateTexture(WrTexture* texture);
 
 void InitTextures(WrTexture* textures) {
-    for (int i = 1; i < WR_TEXTURE_COUNT; i++) {
+    for (int i = 0; i < WR_TEXTURE_COUNT; i++) {
         InitTexture(&textures[i], WR_TEXTURE_PATHS[i]);
     }
 }
 
 void TerminateTextures(WrTexture* textures) {
-    for (int i = 1; i < WR_TEXTURE_COUNT; i++) {
+    for (int i = 0; i < WR_TEXTURE_COUNT; i++) {
         TerminateTexture(&textures[i]);
     }
 }
@@ -78,7 +80,9 @@ static void InitTexture(WrTexture* texture, const char* path) {
 
     texture->data = LoadImageColors(img);
     if (!texture->data) {
-        img = GenImageChecked(64, 64, 8, 8, BLACK, PURPLE);
+        UnloadImage(img);
+
+        img = GenImageChecked(WR_DEFAULT_TEXTURE_SIZE, WR_DEFAULT_TEXTURE_SIZE, 8, 8, BLACK, PURPLE);
         texture->data = LoadImageColors(img);
     }
 
