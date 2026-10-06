@@ -4,6 +4,8 @@ target_sources(${PROJECT_NAME} PRIVATE
     Raycast/Ray.h
     Raycast/Raycast.h
     Raycast/Raycast.c
+    Texture.h
+    Texture.c
     Framebuffer.h
     Framebuffer.c
 )
