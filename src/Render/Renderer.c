@@ -53,9 +53,12 @@ static void RenderMinimap(const WrRenderer* r, const WrGame* g);
 void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
 
-    DrawTexturePro(r->fb.frame, (Rectangle){0.f, 0.f, (float)r->fb.width, (float)r->fb.height},
-                   (Rectangle){0.f, 0.f, (float)r->screenWidth, (float)r->screenHeight}, (Vector2){0.f, 0.f}, 0.f,
-                   WHITE);
+    float scale = WR_MIN((float)r->screenWidth / r->fb.width, (float)r->screenHeight / r->fb.height);
+    float dstWidth = r->fb.width * scale;
+    float dstHeight = r->fb.height * scale;
+    Rectangle src = {0.f, 0.f, (float)r->fb.width, (float)r->fb.height};
+    Rectangle dst = {(r->screenWidth - dstWidth) / 2.f, (r->screenHeight - dstHeight) / 2.f, dstWidth, dstHeight};
+    DrawTexturePro(r->fb.frame, src, dst, (Vector2){0.f, 0.f}, 0.f, WHITE);
 
     RenderMinimap(r, g);
 
