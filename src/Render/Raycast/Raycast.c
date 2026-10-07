@@ -27,38 +27,43 @@ void CastRays(WrRay* rays, int count, const WrMap* m, const WrPlayer* p) {
 
         int stepX, stepY;
         float sideDistX, sideDistY;
+        WrWallFace faceX, faceY;
         if (rayDir.x < 0.f) {
             stepX = -1;
             sideDistX = (p->pos.x - mapX) * deltaDistX;
+            faceX = WR_WALL_FACE_EAST;
         } else {
             stepX = 1;
             sideDistX = (mapX + 1.f - p->pos.x) * deltaDistX;
+            faceX = WR_WALL_FACE_WEST;
         }
 
         if (rayDir.y < 0.f) {
             stepY = -1;
             sideDistY = (p->pos.y - mapY) * deltaDistY;
+            faceY = WR_WALL_FACE_SOUTH;
         } else {
             stepY = 1;
             sideDistY = (mapY + 1.f - p->pos.y) * deltaDistY;
+            faceY = WR_WALL_FACE_NORTH;
         }
 
-        WrHitType side = WR_HIT_VERTICAL;
+        WrWallFace face = WR_WALL_FACE_NONE;
         bool hitFound = false;
         float perp = 0.f;
         for (int step = 0; step < m->width + m->height; step++) {
             if (sideDistX < sideDistY) {
                 sideDistX += deltaDistX;
                 mapX += stepX;
-                side = WR_HIT_VERTICAL;
+                face = faceX;
             } else {
                 sideDistY += deltaDistY;
                 mapY += stepY;
-                side = WR_HIT_HORIZONTAL;
+                face = faceY;
             }
 
             if (IsMapCellSolid(m, mapX, mapY)) {
-                perp = (side == WR_HIT_VERTICAL) ? sideDistX - deltaDistX : sideDistY - deltaDistY;
+                perp = IsVerticalHit(face) ? sideDistX - deltaDistX : sideDistY - deltaDistY;
                 hitFound = true;
 
                 break;
@@ -67,15 +72,19 @@ void CastRays(WrRay* rays, int count, const WrMap* m, const WrPlayer* p) {
 
         WrRay* ray = &rays[i];
         if (hitFound) {
-            ray->dist = perp;
             ray->pos.x = (p->pos.x + rayDir.x * perp);
             ray->pos.y = (p->pos.y + rayDir.y * perp);
-            ray->hit = side;
+            ray->dist = perp;
+            ray->cellX = mapX;
+            ray->cellY = mapY;
+            ray->face = face;
         } else {
-            ray->dist = FLT_MAX;
             ray->pos.x = p->pos.x;
             ray->pos.y = p->pos.y;
-            ray->hit = WR_HIT_NONE;
+            ray->dist = FLT_MAX;
+            ray->cellX = -1;
+            ray->cellY = -1;
+            ray->face = WR_WALL_FACE_NONE;
         }
     }
 }

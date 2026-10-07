@@ -29,7 +29,7 @@ bool InitDefaultMap(WrMap* m) {
         m->data[i] = defaultMap[i];
     }
 
-    m->playerStartPos = (WrVector2){4.f, 4.f};
+    m->playerStartPos = (WrVector2){4.5f, 4.5f};
     m->playerStartDir = (WrVector2){0.f, -1.f}; // Player looking up
 
     return true;
