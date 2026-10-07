@@ -97,7 +97,7 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
         if (h > height) h = (float)height;
 
         int rectStartY = (int)((height - h) / 2.f);
-        Color col = ray->side == WR_HIT_EAST || ray->side == WR_HIT_WEST ? DARKPURPLE : PURPLE;
+        Color col = IsVerticalHit(ray->face) ? DARKPURPLE : PURPLE;
 
         for (int y = rectStartY; y < rectStartY + h; y++) {
             buffer[y * width + i] = col;

@@ -3,20 +3,26 @@
 
 #include "Utils/Math.h"
 
-typedef enum {
-    WR_HIT_NONE,
-    WR_HIT_NORTH,
-    WR_HIT_SOUTH,
-    WR_HIT_EAST,
-    WR_HIT_WEST,
+#include <stdbool.h>
 
-    WR_HIT_COUNT
-} WrHitDirection;
+typedef enum {
+    WR_WALL_FACE_NONE,
+    WR_WALL_FACE_NORTH,
+    WR_WALL_FACE_SOUTH,
+    WR_WALL_FACE_EAST,
+    WR_WALL_FACE_WEST,
+
+    WR_WALL_FACE_COUNT
+} WrWallFace;
 
 typedef struct WrRay {
     WrVector2 pos;
     float dist;
-    WrHitDirection side;
+    WrWallFace face;
 } WrRay;
+
+static inline bool IsVerticalHit(WrWallFace hitFace) {
+    return (hitFace == WR_WALL_FACE_EAST || hitFace == WR_WALL_FACE_WEST);
+}
 
 #endif // WR_RAY_H
