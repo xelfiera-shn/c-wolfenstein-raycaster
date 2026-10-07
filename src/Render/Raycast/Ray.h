@@ -5,16 +5,18 @@
 
 typedef enum {
     WR_HIT_NONE,
-    WR_HIT_VERTICAL,
-    WR_HIT_HORIZONTAL,
+    WR_HIT_NORTH,
+    WR_HIT_SOUTH,
+    WR_HIT_EAST,
+    WR_HIT_WEST,
 
     WR_HIT_COUNT
-} WrHitType;
+} WrHitDirection;
 
 typedef struct WrRay {
     WrVector2 pos;
     float dist;
-    WrHitType hit;
+    WrHitDirection side;
 } WrRay;
 
 #endif // WR_RAY_H
