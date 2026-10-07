@@ -105,11 +105,7 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
         if (textureColumn >= texture->width) textureColumn = texture->width - 1;
 
         float brightnessFactor = (1.f / ray->dist) - 1.f;
-        if (brightnessFactor > 0.f) {
-            brightnessFactor = 0.f;
-        } else if (brightnessFactor < -0.9f) {
-            brightnessFactor = -0.9f;
-        }
+        brightnessFactor = WR_CLAMP(brightnessFactor, -0.9f, 0.f);
 
         int startY = (int)((height - h) / 2.f);
         int endY = startY + (int)h;
