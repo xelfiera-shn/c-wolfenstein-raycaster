@@ -98,6 +98,8 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
         float h = height / ray->dist;
 
         float wallX = IsVerticalHit(ray->face) ? ray->pos.y - floorf(ray->pos.y) : ray->pos.x - floorf(ray->pos.x);
+        if (ray->face == WR_WALL_FACE_EAST || ray->face == WR_WALL_FACE_NORTH) wallX = 1.f - wallX;
+
         int textureColumn = (int)(wallX * texture->width);
         if (textureColumn >= texture->width) textureColumn = texture->width - 1;
 
