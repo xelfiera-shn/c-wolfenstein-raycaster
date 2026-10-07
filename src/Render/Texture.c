@@ -1,7 +1,5 @@
 #include "Texture.h"
 
-#include <string.h>
-
 // clang-format off
 static const char* const WR_TEXTURE_PATHS[WR_TEXTURE_COUNT] = {
     [WR_TEXTURE_NONE] = "",
