@@ -5,6 +5,7 @@
 #include "Game/Game.h"
 
 #include <stdlib.h>
+#include <math.h>
 #include <raylib.h>
 
 bool InitRenderer(WrRenderer* r) {
@@ -39,7 +40,7 @@ void TerminateRenderer(WrRenderer* r) {
     TerminateTextures(r->textures);
 }
 
-static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count);
+static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -54,7 +55,7 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);
 
-    DrawViewToFramebuffer(r->fb.buffer, r->fb.width, r->fb.height, r->rays, r->rayCount);
+    DrawViewToFramebuffer(r->fb.buffer, r->fb.width, r->fb.height, r->rays, r->rayCount, r->textures, &g->map);
     UpdateTexture(r->fb.frame, r->fb.buffer);
 }
 
@@ -77,7 +78,7 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
     EndDrawing();
 }
 
-static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count) {
+static void DrawViewToFramebuffer(Color* buffer, int width, int height, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m) {
     for (int y = 0; y < height / 2; y++) {
         for (int x = 0; x < width; x++) {
             buffer[y * width + x] = SKYBLUE;
@@ -92,15 +93,24 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
 
     for (int i = 0; i < count; i++) {
         const WrRay* ray = &rays[i];
+        const WrTexture* texture = &textures[GetMapCell(m, ray->cellX, ray->cellY)];
 
         float h = height / ray->dist;
-        if (h > height) h = (float)height;
 
-        int rectStartY = (int)((height - h) / 2.f);
-        Color col = IsVerticalHit(ray->face) ? DARKPURPLE : PURPLE;
+        float wallX = IsVerticalHit(ray->face) ? ray->pos.y - floorf(ray->pos.y) : ray->pos.x - floorf(ray->pos.x);
+        int textureColumn = (int)(wallX * texture->width);
+        if (textureColumn >= texture->width) textureColumn = texture->width - 1;
 
-        for (int y = rectStartY; y < rectStartY + h; y++) {
-            buffer[y * width + i] = col;
+        int startY = (int)((height - h) / 2.f);
+        int endY = startY + (int)h;
+
+        int drawStart = startY < 0 ? 0 : startY;
+        int drawEnd = endY > height ? height : endY;
+
+        for (int y = drawStart; y < drawEnd; y++) {
+            int textureRow = (int)((y - startY) * texture->height / h);
+            if (textureRow >= texture->height) textureRow = texture->height - 1;
+            buffer[y * width + i] = texture->data[textureRow * texture->width + textureColumn];
         }
     }
 }
@@ -120,8 +130,7 @@ static void RenderMinimap(const WrRenderer* r, const WrGame* g) {
     int minimapStartX = r->screenWidth - minimapWidth - padding;
     int minimapStartY = r->screenHeight - minimapHeight - padding;
 
-    DrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding,
-                  minimapHeight + 2 * padding, BLACK);
+    DrawRectangle(minimapStartX - padding, minimapStartY - padding, minimapWidth + 2 * padding, minimapHeight + 2 * padding, BLACK);
 
     for (int y = 0; y < m->height; y++) {
         for (int x = 0; x < m->width; x++) {
