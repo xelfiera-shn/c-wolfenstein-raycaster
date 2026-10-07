@@ -72,14 +72,18 @@ void CastRays(WrRay* rays, int count, const WrMap* m, const WrPlayer* p) {
 
         WrRay* ray = &rays[i];
         if (hitFound) {
-            ray->dist = perp;
             ray->pos.x = (p->pos.x + rayDir.x * perp);
             ray->pos.y = (p->pos.y + rayDir.y * perp);
+            ray->dist = perp;
+            ray->cellX = mapX;
+            ray->cellY = mapY;
             ray->face = face;
         } else {
-            ray->dist = FLT_MAX;
             ray->pos.x = p->pos.x;
             ray->pos.y = p->pos.y;
+            ray->dist = FLT_MAX;
+            ray->cellX = -1;
+            ray->cellY = -1;
             ray->face = WR_WALL_FACE_NONE;
         }
     }

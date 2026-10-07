@@ -18,6 +18,7 @@ typedef enum {
 typedef struct WrRay {
     WrVector2 pos;
     float dist;
+    int cellX, cellY;
     WrWallFace face;
 } WrRay;
 
