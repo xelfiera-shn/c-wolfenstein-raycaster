@@ -96,12 +96,20 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
         const WrTexture* texture = &textures[GetMapCell(m, ray->cellX, ray->cellY)];
 
         float h = height / ray->dist;
+        bool isVerticalHit = IsVerticalHit(ray->face);
 
-        float wallX = IsVerticalHit(ray->face) ? ray->pos.y - floorf(ray->pos.y) : ray->pos.x - floorf(ray->pos.x);
+        float wallX = isVerticalHit ? ray->pos.y - floorf(ray->pos.y) : ray->pos.x - floorf(ray->pos.x);
         if (ray->face == WR_WALL_FACE_EAST || ray->face == WR_WALL_FACE_NORTH) wallX = 1.f - wallX;
 
         int textureColumn = (int)(wallX * texture->width);
         if (textureColumn >= texture->width) textureColumn = texture->width - 1;
+
+        float brightnessFactor = (1.f / ray->dist) - 1.f;
+        if (brightnessFactor > 0.f) {
+            brightnessFactor = 0.f;
+        } else if (brightnessFactor < -0.9f) {
+            brightnessFactor = -0.9f;
+        }
 
         int startY = (int)((height - h) / 2.f);
         int endY = startY + (int)h;
@@ -112,7 +120,8 @@ static void DrawViewToFramebuffer(Color* buffer, int width, int height, const Wr
         for (int y = drawStart; y < drawEnd; y++) {
             int textureRow = (int)((y - startY) * texture->height / h);
             if (textureRow >= texture->height) textureRow = texture->height - 1;
-            buffer[y * width + i] = texture->data[textureRow * texture->width + textureColumn];
+
+            buffer[y * width + i] = ColorBrightness(texture->data[textureRow * texture->width + textureColumn], brightnessFactor);
         }
     }
 }
