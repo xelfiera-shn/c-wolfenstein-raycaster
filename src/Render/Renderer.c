@@ -103,8 +103,9 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
         int textureColumn = (int)(wallX * texture->width);
         if (textureColumn >= texture->width) textureColumn = texture->width - 1;
 
-        float brightnessFactor = (1.f / ray->dist) - 1.f;
-        brightnessFactor = WR_CLAMP(brightnessFactor, -0.9f, 0.f);
+        float brightness = (1.f / ray->dist);
+        brightness = WR_CLAMP(brightness, 0.4f, 1.f);
+        if (isVerticalHit) brightness *= 0.7f;
 
         int startY = (int)((fb->height - h) / 2.f);
         int endY = startY + (int)h;
@@ -116,7 +117,10 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
             int textureRow = (int)((y - startY) * texture->height / h);
             if (textureRow >= texture->height) textureRow = texture->height - 1;
 
-            fb->buffer[y * fb->width + i] = ColorBrightness(texture->data[textureRow * texture->width + textureColumn], brightnessFactor);
+            Color col = texture->data[textureRow * texture->width + textureColumn];
+            col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
+
+            fb->buffer[y * fb->width + i] = col;
         }
     }
 }
