@@ -106,9 +106,9 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
         int textureColumn = (int)(wallX * texture->width);
         if (textureColumn >= texture->width) textureColumn = texture->width - 1;
 
-        float brightness = (1.f / ray->dist);
-        brightness = WR_CLAMP(brightness, 0.4f, 1.f);
-        if (isVerticalHit) brightness *= 0.7f;
+        float brightness = 1.f - ray->dist / WR_FOG_DISTANCE;
+        brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
+        if (isVerticalHit) brightness *= WR_VERTICAL_HIT_BRIGHTNESS_FACTOR;
 
         int startY = (int)((fb->height - h) / 2.f);
         int endY = startY + (int)h;
