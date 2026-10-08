@@ -12,7 +12,7 @@ typedef struct WrFramebuffer {
     Color* buffer;
 } WrFramebuffer;
 
-bool InitFramebuffer(WrFramebuffer* fb, int width, int height);
+bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, int screenHeight);
 void TerminateFramebuffer(WrFramebuffer* fb);
 
 #endif // WR_FRAMEBUFFER_H
