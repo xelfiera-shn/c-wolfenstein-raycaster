@@ -18,7 +18,7 @@ bool InitRenderer(WrRenderer* r) {
 
     InitTextures(r->textures);
 
-    if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT)) {
+    if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT, r->screenWidth, r->screenHeight)) {
         free(r->rays);
         r->rays = NULL;
 
@@ -65,9 +65,8 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
     BeginDrawing();
     ClearBackground(BLACK);
 
-    float scale = WR_MIN((float)r->screenWidth / r->fb.width, (float)r->screenHeight / r->fb.height);
-    float dstWidth = r->fb.width * scale;
-    float dstHeight = r->fb.height * scale;
+    float dstWidth = r->fb.width * r->fb.scale;
+    float dstHeight = r->fb.height * r->fb.scale;
     Rectangle src = {0.f, 0.f, (float)r->fb.width, (float)r->fb.height};
     Rectangle dst = {(r->screenWidth - dstWidth) / 2.f, (r->screenHeight - dstHeight) / 2.f, dstWidth, dstHeight};
     DrawTexturePro(r->fb.frame, src, dst, (Vector2){0.f, 0.f}, 0.f, WHITE);

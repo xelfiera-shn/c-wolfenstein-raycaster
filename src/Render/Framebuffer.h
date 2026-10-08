@@ -7,6 +7,7 @@
 typedef struct WrFramebuffer {
     int width;
     int height;
+    float scale;
     Texture2D frame;
     Color* buffer;
 } WrFramebuffer;

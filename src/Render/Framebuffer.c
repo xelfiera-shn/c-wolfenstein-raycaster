@@ -2,9 +2,10 @@
 
 #include <stdlib.h>
 
-bool InitFramebuffer(WrFramebuffer* fb, int width, int height) {
+bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, int screenHeight) {
     fb->width = width;
     fb->height = height;
+    fb->scale = WR_MIN((float)screenWidth / fb->width, (float)screenHeight / fb->height);
 
     fb->buffer = calloc(fb->width * fb->height, sizeof *fb->buffer);
     if (!fb->buffer) return false;
