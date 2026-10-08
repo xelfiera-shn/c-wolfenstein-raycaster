@@ -78,4 +78,6 @@ typedef struct WrTexture {
 void InitTextures(WrTexture* textures);
 void TerminateTextures(WrTexture* textures);
 
+const WrTexture* GetTexture(const WrTexture* textures, int id);
+
 #endif // WR_TEXTURE_H

@@ -92,7 +92,7 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
 
     for (int i = 0; i < count; i++) {
         const WrRay* ray = &rays[i];
-        const WrTexture* texture = &textures[GetMapCell(m, ray->cellX, ray->cellY)];
+        const WrTexture* texture = GetTexture(textures, GetMapCell(m, ray->cellX, ray->cellY));
 
         float h = fb->height / ray->dist;
         bool isVerticalHit = IsVerticalHit(ray->face);

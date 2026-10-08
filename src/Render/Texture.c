@@ -75,6 +75,10 @@ void TerminateTextures(WrTexture* textures) {
     }
 }
 
+const WrTexture* GetTexture(const WrTexture* textures, int id) {
+    return (id < 0 || id > WR_TEXTURE_COUNT - 1) ? &textures[0] : &textures[id];
+}
+
 static void InitTexture(WrTexture* texture, const char* path) {
     Image img = {0};
     if (path && path[0] != '\0') img = LoadImage(path);
