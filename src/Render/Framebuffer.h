@@ -15,4 +15,6 @@ typedef struct WrFramebuffer {
 bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, int screenHeight);
 void TerminateFramebuffer(WrFramebuffer* fb);
 
+void UpdateFramebufferScale(WrFramebuffer* fb, int screenWidth, int screenHeight);
+
 #endif // WR_FRAMEBUFFER_H

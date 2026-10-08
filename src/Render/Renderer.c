@@ -51,6 +51,7 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     if (r->screenWidth != sw || r->screenHeight != sh) {
         r->screenWidth = sw;
         r->screenHeight = sh;
+        UpdateFramebufferScale(&r->fb, r->screenWidth, r->screenHeight);
     }
 
     CastRays(r->rays, r->rayCount, &g->map, &g->player);

@@ -6,7 +6,7 @@
 bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, int screenHeight) {
     fb->width = width;
     fb->height = height;
-    fb->scale = WR_MIN((float)screenWidth / fb->width, (float)screenHeight / fb->height);
+    UpdateFramebufferScale(fb, screenWidth, screenHeight);
 
     fb->buffer = calloc(fb->width * fb->height, sizeof *fb->buffer);
     if (!fb->buffer) return false;
@@ -34,4 +34,8 @@ void TerminateFramebuffer(WrFramebuffer* fb) {
     fb->frame = (Texture2D){0};
     free(fb->buffer);
     fb->buffer = NULL;
+}
+
+void UpdateFramebufferScale(WrFramebuffer* fb, int screenWidth, int screenHeight) {
+    fb->scale = WR_MIN((float)screenWidth / fb->width, (float)screenHeight / fb->height);
 }
