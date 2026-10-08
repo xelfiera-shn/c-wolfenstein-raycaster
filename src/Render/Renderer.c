@@ -93,6 +93,8 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
 
     for (int i = 0; i < count; i++) {
         const WrRay* ray = &rays[i];
+        if (ray->face == WR_WALL_FACE_NONE) continue;
+
         const WrTexture* texture = GetTexture(textures, GetMapCell(m, ray->cellX, ray->cellY));
 
         float h = fb->height / ray->dist;
