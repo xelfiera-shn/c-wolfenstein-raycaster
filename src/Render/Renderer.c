@@ -11,9 +11,8 @@
 bool InitRenderer(WrRenderer* r) {
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
-    r->rayCount = WR_INNER_WIDTH;
 
-    r->rays = calloc(r->rayCount, sizeof *r->rays);
+    r->rays = calloc(WR_INNER_WIDTH, sizeof *r->rays);
     if (!r->rays) return false;
 
     InitTextures(r->textures);
@@ -40,7 +39,7 @@ void TerminateRenderer(WrRenderer* r) {
     TerminateTextures(r->textures);
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m);
+static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -54,9 +53,9 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
         UpdateFramebufferScale(&r->fb, r->screenWidth, r->screenHeight);
     }
 
-    CastRays(r->rays, r->rayCount, &g->map, &g->player);
+    CastRays(r->rays, r->fb.width, &g->map, &g->player);
 
-    DrawViewToFramebuffer(&r->fb, r->rays, r->rayCount, r->textures, &g->map);
+    DrawViewToFramebuffer(&r->fb, r->rays, r->textures, &g->map);
     UpdateTexture(r->fb.frame, r->fb.buffer);
 }
 
@@ -78,7 +77,7 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
     EndDrawing();
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m) {
+static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m) {
     for (int y = 0; y < fb->height / 2; y++) {
         for (int x = 0; x < fb->width; x++) {
             fb->buffer[y * fb->width + x] = SKYBLUE;
@@ -91,7 +90,7 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
         }
     }
 
-    for (int i = 0; i < count; i++) {
+    for (int i = 0; i < fb->width; i++) {
         const WrRay* ray = &rays[i];
         if (ray->face == WR_WALL_FACE_NONE) continue;
 
@@ -167,7 +166,7 @@ static void RenderMinimap(const WrRenderer* r, const WrGame* g) {
     DrawLine((int)playerX, (int)playerY, (int)playerDirX, (int)playerDirY, DARKBLUE);
 
     // Render rays
-    for (int i = 0; i < r->rayCount; i++) {
+    for (int i = 0; i < r->fb.width; i++) {
         const WrRay* ray = &r->rays[i];
 
         float rayX = playerX + (ray->pos.x - p->pos.x) * (minimapCellSize + padding);

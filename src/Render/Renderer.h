@@ -13,9 +13,7 @@ typedef struct WrRenderer {
     int screenWidth;  // Width of window screen
     int screenHeight; // Height of window screen
 
-    int rayCount; // Count of rays (same as inner width but that's understandable then)
     WrRay* rays;
-
     WrTexture textures[WR_TEXTURE_COUNT];
 
     WrFramebuffer fb;
