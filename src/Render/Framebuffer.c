@@ -39,6 +39,8 @@ bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, 
 
         free(fb->buffer);
         fb->buffer = NULL;
+
+        return false;
     }
 
     return true;
