@@ -1,7 +1,7 @@
 #ifndef WR_INPUT_H
 #define WR_INPUT_H
 
-#include "Utils/Math.h"
+#include "Utils/Vector.h"
 
 #include <stdbool.h>
 

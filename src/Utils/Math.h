@@ -8,11 +8,4 @@
 #define WR_CLAMP(val, lo, hi) (((val) < (lo)) ? (lo) : ((val) > (hi)) ? (hi) : (val))
 #define WR_SIGN(val) ((val) >= 0 ? 1 : -1)
 
-typedef struct WrVector2 {
-    float x, y;
-} WrVector2;
-
-void RotateVector(WrVector2* vec, float ang);
-void NormalizeVector(WrVector2* vec);
-
 #endif // WR_MATH_H

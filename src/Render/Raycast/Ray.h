@@ -1,7 +1,7 @@
 #ifndef WR_RAY_H
 #define WR_RAY_H
 
-#include "Utils/Math.h"
+#include "Utils/Vector.h"
 
 #include <stdbool.h>
 

@@ -1,7 +1,7 @@
 #ifndef WR_PLAYER_H
 #define WR_PLAYER_H
 
-#include "Utils/Math.h"
+#include "Utils/Vector.h"
 #include "Game/Map/Map.h"
 
 typedef struct WrPlayer {

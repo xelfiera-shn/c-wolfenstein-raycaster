@@ -1,7 +1,7 @@
 #ifndef WR_MAP_H
 #define WR_MAP_H
 
-#include "Utils/Math.h"
+#include "Utils/Vector.h"
 
 #include <stdbool.h>
 
