@@ -24,14 +24,38 @@ bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, 
 
     SetTextureFilter(fb->frame, TEXTURE_FILTER_POINT);
 
+    fb->wallStarts = calloc(fb->width, sizeof *fb->wallStarts);
+    fb->wallEnds = calloc(fb->width, sizeof *fb->wallEnds);
+
+    if (!fb->wallStarts || !fb->wallEnds) {
+        free(fb->wallStarts);
+        fb->wallStarts = NULL;
+
+        free(fb->wallEnds);
+        fb->wallEnds = NULL;
+
+        UnloadTexture(fb->frame);
+        fb->frame = (Texture2D){0};
+
+        free(fb->buffer);
+        fb->buffer = NULL;
+    }
+
     return true;
 }
 
 void TerminateFramebuffer(WrFramebuffer* fb) {
     if (!fb) return;
 
+    free(fb->wallStarts);
+    fb->wallStarts = NULL;
+
+    free(fb->wallEnds);
+    fb->wallEnds = NULL;
+
     UnloadTexture(fb->frame);
     fb->frame = (Texture2D){0};
+
     free(fb->buffer);
     fb->buffer = NULL;
 }
