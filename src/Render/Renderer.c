@@ -132,7 +132,7 @@ static void DrawCeilToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const Wr
     const WrTexture* texture = GetTexture(textures, WR_TEXTURE_TILES_4);
 
     for (int i = 0; i < fb->width; i++) {
-        int start = fb->wallStarts[i];
+        int start = fb->wallStarts[i] - 1;
         int half = fb->height / 2;
         if (start >= half) start = half - 1;
 
