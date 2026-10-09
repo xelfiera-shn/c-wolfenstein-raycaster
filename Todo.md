@@ -3,6 +3,8 @@
 - Simplify flooring and ceiling functions
 
 ====== feature/game-map-system ======
+- Determine map file format
+- Floor and ceil data arrays
 
 ====== feature/game-doors ======
 
