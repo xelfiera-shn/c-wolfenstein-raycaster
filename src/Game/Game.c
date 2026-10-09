@@ -12,7 +12,7 @@ static void MovePlayer(WrPlayer* p, const WrMap* m, float dx, float dy, bool isF
 bool InitGame(WrGame* g) {
     if (!g) return false;
 
-    if (!InitDefaultMap(&g->map)) return false;
+    if (!InitMap(&g->map, WR_MAP_1)) return false;
 
     InitPlayer(&g->player, &g->map);
 
