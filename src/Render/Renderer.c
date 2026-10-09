@@ -39,7 +39,8 @@ void TerminateRenderer(WrRenderer* r) {
     TerminateTextures(r->textures);
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m);
+static void DrawWallsToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m);
+static void DrawFloorToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrPlayer* p);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -55,7 +56,9 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
 
     CastRays(r->rays, r->fb.width, &g->map, &g->player);
 
-    DrawViewToFramebuffer(&r->fb, r->rays, r->textures, &g->map);
+    DrawWallsToFramebuffer(&r->fb, r->rays, r->textures, &g->map);
+    DrawFloorToFramebuffer(&r->fb, r->rays, r->textures, &g->player);
+
     UpdateTexture(r->fb.frame, r->fb.buffer);
 }
 
@@ -77,19 +80,7 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
     EndDrawing();
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m) {
-    for (int y = 0; y < fb->height / 2; y++) {
-        for (int x = 0; x < fb->width; x++) {
-            fb->buffer[y * fb->width + x] = SKYBLUE;
-        }
-    }
-
-    for (int y = fb->height / 2; y < fb->height; y++) {
-        for (int x = 0; x < fb->width; x++) {
-            fb->buffer[y * fb->width + x] = BEIGE;
-        }
-    }
-
+static void DrawWallsToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m) {
     for (int i = 0; i < fb->width; i++) {
         const WrRay* ray = &rays[i];
         if (ray->face == WR_WALL_FACE_NONE) continue;
@@ -118,6 +109,46 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const Wr
         for (int y = drawStart; y < drawEnd; y++) {
             int textureRow = (int)((y - startY) * texture->height / h);
             if (textureRow >= texture->height) textureRow = texture->height - 1;
+
+            Color col = texture->data[textureRow * texture->width + textureColumn];
+            col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
+
+            fb->buffer[y * fb->width + i] = col;
+        }
+
+        fb->wallStarts[i] = drawStart;
+        fb->wallEnds[i] = drawEnd;
+    }
+}
+
+static void DrawFloorToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrPlayer* p) {
+    const WrTexture* texture = GetTexture(textures, WR_TEXTURE_TILES_4);
+
+    for (int i = 0; i < fb->width; i++) {
+        int start = fb->wallEnds[i];
+        int half = fb->height / 2.f;
+        if (start <= half) start = half + 1;
+
+        const WrRay* ray = &rays[i];
+        float rayX = ray->pos.x - p->pos.x;
+        float rayY = ray->pos.y - p->pos.y;
+
+        for (int y = start; y < fb->height; y++) {
+            float d = y - half;         // Pixel dist from horizon
+            float floorDist = half / d; // Perpendicular dist from player
+
+            float scale = floorDist / ray->dist;
+            float floorX = p->pos.x + rayX * scale;
+            float floorY = p->pos.y + rayY * scale;
+
+            float brightness = 1.f - floorDist / WR_FOG_DISTANCE;
+            brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
+
+            int textureColumn = (int)((floorX - floorf(floorX)) * texture->width);
+            if (textureColumn == texture->width) textureColumn = texture->width - 1;
+
+            int textureRow = (int)((floorY - floorf(floorY)) * texture->height);
+            if (textureRow == texture->height) textureRow = texture->height - 1;
 
             Color col = texture->data[textureRow * texture->width + textureColumn];
             col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
