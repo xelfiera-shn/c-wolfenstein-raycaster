@@ -85,7 +85,12 @@ void RenderGame(const WrRenderer* r, const WrGame* g) {
 static void DrawWallsToFramebuffer(WrFramebuffer* fb, const WrRay* rays, const WrTexture* textures, const WrMap* m) {
     for (int i = 0; i < fb->width; i++) {
         const WrRay* ray = &rays[i];
-        if (ray->face == WR_WALL_FACE_NONE) continue;
+        if (ray->face == WR_WALL_FACE_NONE) {
+            fb->wallStarts[i] = fb->height / 2;
+            fb->wallEnds[i] = fb->height / 2;
+
+            continue;
+        }
 
         const WrTexture* texture = GetTexture(textures, GetMapCell(m, ray->cellX, ray->cellY));
 
