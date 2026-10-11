@@ -14,8 +14,10 @@ typedef struct WrRenderer {
     int screenHeight; // Height of window screen
 
     WrRay* rays;
-    WrTexture textures[WR_TEXTURE_COUNT];
+    int* wallStarts;
+    int* wallEnds;
 
+    WrTexture textures[WR_TEXTURE_COUNT];
     WrFramebuffer fb;
 } WrRenderer;
 

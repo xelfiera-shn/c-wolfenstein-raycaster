@@ -10,9 +10,6 @@ typedef struct WrFramebuffer {
     float scale;
     Texture2D frame;
     Color* buffer;
-
-    int* wallStarts;
-    int* wallEnds;
 } WrFramebuffer;
 
 bool InitFramebuffer(WrFramebuffer* fb, int width, int height, int screenWidth, int screenHeight);
