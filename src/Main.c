@@ -31,7 +31,7 @@ int main(int argc, char const* argv[]) {
         UpdateGame(&game, &input, dt);
         UpdateRenderer(&renderer, &game);
 
-        RenderGame(&renderer, &game);
+        RenderGame(&renderer);
     }
 
     exitCode = EXIT_SUCCESS;

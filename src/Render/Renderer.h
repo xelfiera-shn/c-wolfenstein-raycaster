@@ -25,6 +25,6 @@ bool InitRenderer(WrRenderer* r);
 void TerminateRenderer(WrRenderer* r);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g);
-void RenderGame(const WrRenderer* r, const WrGame* g);
+void RenderGame(const WrRenderer* r);
 
 #endif // WR_RENDERER_H
