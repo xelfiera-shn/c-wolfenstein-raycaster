@@ -1,7 +1,6 @@
 #include "File.h"
 
 #include <stdio.h>
-#include <string.h>
 
 static size_t GetLineCount(FILE* fptr);
 static bool ReadLine(char* buff, int length, FILE* fptr);
