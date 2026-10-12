@@ -11,20 +11,42 @@
 bool InitRenderer(WrRenderer* r) {
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();
-    r->rayCount = WR_INNER_WIDTH;
 
-    r->rays = calloc(r->rayCount, sizeof *r->rays);
+    r->rays = calloc(WR_INNER_WIDTH, sizeof *r->rays);
     if (!r->rays) return false;
 
     InitTextures(r->textures);
 
     if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT, r->screenWidth, r->screenHeight)) {
+        TerminateTextures(r->textures);
+
         free(r->rays);
         r->rays = NULL;
 
-        TerminateTextures(r->textures);
+        return false;
+    }
+
+    r->wallStarts = calloc(r->fb.width, sizeof *r->wallStarts);
+    r->wallEnds = calloc(r->fb.width, sizeof *r->wallEnds);
+    r->fcDists = calloc(r->fb.width * r->fb.height, sizeof *r->fcDists);
+
+    if (!r->wallStarts || !r->wallEnds || !r->fcDists) {
+        TerminateRenderer(r);
 
         return false;
+    }
+
+    int horizon = r->fb.height / 2;
+    for (int x = 0; x < r->fb.width; x++) {
+        for (int y = 0; y < r->fb.height; y++) {
+            float d = 0.f;
+            if (y < horizon)
+                d = horizon - (float)y;
+            else if (y > horizon)
+                d = (float)y - horizon;
+
+            r->fcDists[y * r->fb.width + x] = horizon / d;
+        }
     }
 
     return true;
@@ -33,14 +55,24 @@ bool InitRenderer(WrRenderer* r) {
 void TerminateRenderer(WrRenderer* r) {
     if (!r) return;
 
+    free(r->fcDists);
+    r->fcDists = NULL;
+
+    free(r->wallEnds);
+    r->wallEnds = NULL;
+
+    free(r->wallStarts);
+    r->wallStarts = NULL;
+
     TerminateFramebuffer(&r->fb);
+    TerminateTextures(r->textures);
+
     free(r->rays);
     r->rays = NULL;
-
-    TerminateTextures(r->textures);
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m);
+static void DrawWallsToFramebuffer(WrRenderer* r, const WrMap* m);
+static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -54,9 +86,11 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
         UpdateFramebufferScale(&r->fb, r->screenWidth, r->screenHeight);
     }
 
-    CastRays(r->rays, r->rayCount, &g->map, &g->player);
+    CastRays(r->rays, r->fb.width, &g->map, &g->player);
 
-    DrawViewToFramebuffer(&r->fb, r->rays, r->rayCount, r->textures, &g->map);
+    DrawWallsToFramebuffer(r, &g->map);
+    DrawFloorAndCeilToFramebuffer(r, &g->player);
+
     UpdateTexture(r->fb.frame, r->fb.buffer);
 }
 
@@ -74,26 +108,19 @@ void RenderGame(const WrRenderer* r) {
     EndDrawing();
 }
 
-static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int count, const WrTexture* textures, const WrMap* m) {
-    for (int y = 0; y < fb->height / 2; y++) {
-        for (int x = 0; x < fb->width; x++) {
-            fb->buffer[y * fb->width + x] = SKYBLUE;
+static void DrawWallsToFramebuffer(WrRenderer* r, const WrMap* m) {
+    for (int i = 0; i < r->fb.width; i++) {
+        const WrRay* ray = &r->rays[i];
+        if (ray->face == WR_WALL_FACE_NONE) {
+            r->wallStarts[i] = r->fb.height / 2;
+            r->wallEnds[i] = r->fb.height / 2;
+
+            continue;
         }
-    }
 
-    for (int y = fb->height / 2; y < fb->height; y++) {
-        for (int x = 0; x < fb->width; x++) {
-            fb->buffer[y * fb->width + x] = BEIGE;
-        }
-    }
+        const WrTexture* texture = GetTexture(r->textures, GetMapCell(m, ray->cellX, ray->cellY));
 
-    for (int i = 0; i < count; i++) {
-        const WrRay* ray = &rays[i];
-        if (ray->face == WR_WALL_FACE_NONE) continue;
-
-        const WrTexture* texture = GetTexture(textures, GetMapCell(m, ray->cellX, ray->cellY));
-
-        float h = fb->height / ray->dist;
+        float h = r->fb.height / ray->dist;
         bool isVerticalHit = IsVerticalHit(ray->face);
 
         float wallX = isVerticalHit ? ray->pos.y - floorf(ray->pos.y) : ray->pos.x - floorf(ray->pos.x);
@@ -106,11 +133,11 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
         brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
         if (isVerticalHit) brightness *= WR_VERTICAL_HIT_BRIGHTNESS_FACTOR;
 
-        int startY = (int)((fb->height - h) / 2.f);
+        int startY = (int)((r->fb.height - h) / 2.f);
         int endY = startY + (int)h;
 
         int drawStart = startY < 0 ? 0 : startY;
-        int drawEnd = endY > fb->height ? fb->height : endY;
+        int drawEnd = endY > r->fb.height ? r->fb.height : endY;
 
         for (int y = drawStart; y < drawEnd; y++) {
             int textureRow = (int)((y - startY) * texture->height / h);
@@ -119,7 +146,44 @@ static void DrawViewToFramebuffer(WrFramebuffer* fb, const WrRay* rays, int coun
             Color col = texture->data[textureRow * texture->width + textureColumn];
             col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
 
-            fb->buffer[y * fb->width + i] = col;
+            r->fb.buffer[y * r->fb.width + i] = col;
+        }
+
+        r->wallStarts[i] = drawStart;
+        r->wallEnds[i] = drawEnd - 1;
+    }
+}
+
+static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
+    const WrTexture* texture = GetTexture(r->textures, WR_TEXTURE_TILES_4);
+
+    for (int x = 0; x < r->fb.width; x++) {
+        const WrRay* ray = &r->rays[x];
+        float rayX = ray->pos.x - p->pos.x;
+        float rayY = ray->pos.y - p->pos.y;
+
+        for (int y = 0; y < r->fb.height; y++) {
+            if ((y >= r->wallStarts[x] && y <= r->wallEnds[x]) || y == r->fb.height / 2) continue;
+
+            float dist = r->fcDists[y * r->fb.width + x];
+
+            float scale = dist / ray->dist;
+            float posX = p->pos.x + rayX * scale;
+            float posY = p->pos.y + rayY * scale;
+
+            float brightness = 1.f - dist / WR_FOG_DISTANCE;
+            brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
+
+            int textureColumn = (int)((posX - floorf(posX)) * texture->width);
+            if (textureColumn == texture->width) textureColumn = texture->width - 1;
+
+            int textureRow = (int)((posY - floorf(posY)) * texture->height);
+            if (textureRow == texture->height) textureRow = texture->height - 1;
+
+            Color col = texture->data[textureRow * texture->width + textureColumn];
+            col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
+
+            r->fb.buffer[y * r->fb.width + x] = col;
         }
     }
 }

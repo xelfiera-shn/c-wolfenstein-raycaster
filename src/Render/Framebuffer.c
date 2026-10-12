@@ -32,6 +32,7 @@ void TerminateFramebuffer(WrFramebuffer* fb) {
 
     UnloadTexture(fb->frame);
     fb->frame = (Texture2D){0};
+
     free(fb->buffer);
     fb->buffer = NULL;
 }
