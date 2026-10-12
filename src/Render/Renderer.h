@@ -14,11 +14,12 @@ typedef struct WrRenderer {
     int screenHeight; // Height of window screen
 
     WrRay* rays;
+    WrFramebuffer fb;
+    WrTexture textures[WR_TEXTURE_COUNT];
+
     int* wallStarts;
     int* wallEnds;
-
-    WrTexture textures[WR_TEXTURE_COUNT];
-    WrFramebuffer fb;
+    float* fcDists; // Perpendicular floor and ceil dists from player
 } WrRenderer;
 
 bool InitRenderer(WrRenderer* r);

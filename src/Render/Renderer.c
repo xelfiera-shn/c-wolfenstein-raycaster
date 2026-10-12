@@ -17,16 +17,7 @@ bool InitRenderer(WrRenderer* r) {
 
     InitTextures(r->textures);
 
-    r->wallStarts = calloc(WR_INNER_WIDTH, sizeof *r->wallStarts);
-    r->wallEnds = calloc(WR_INNER_WIDTH, sizeof *r->wallEnds);
-
-    if (!r->wallStarts || !r->wallEnds) {
-        free(r->wallStarts);
-        r->wallStarts = NULL;
-
-        free(r->wallEnds);
-        r->wallEnds = NULL;
-
+    if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT, r->screenWidth, r->screenHeight)) {
         TerminateTextures(r->textures);
 
         free(r->rays);
@@ -35,19 +26,27 @@ bool InitRenderer(WrRenderer* r) {
         return false;
     }
 
-    if (!InitFramebuffer(&r->fb, WR_INNER_WIDTH, WR_INNER_HEIGHT, r->screenWidth, r->screenHeight)) {
-        free(r->wallStarts);
-        r->wallStarts = NULL;
+    r->wallStarts = calloc(r->fb.width, sizeof *r->wallStarts);
+    r->wallEnds = calloc(r->fb.width, sizeof *r->wallEnds);
+    r->fcDists = calloc(r->fb.width * r->fb.height, sizeof *r->fcDists);
 
-        free(r->wallEnds);
-        r->wallEnds = NULL;
-
-        TerminateTextures(r->textures);
-
-        free(r->rays);
-        r->rays = NULL;
+    if (!r->wallStarts || !r->wallEnds || !r->fcDists) {
+        TerminateRenderer(r);
 
         return false;
+    }
+
+    int horizon = r->fb.height / 2;
+    for (int x = 0; x < r->fb.width; x++) {
+        for (int y = 0; y < r->fb.height; y++) {
+            float d = 0.f;
+            if (y < horizon)
+                d = horizon - (float)y;
+            else if (y > horizon)
+                d = (float)y - horizon;
+
+            r->fcDists[y * r->fb.width + x] = horizon / d;
+        }
     }
 
     return true;
@@ -56,14 +55,16 @@ bool InitRenderer(WrRenderer* r) {
 void TerminateRenderer(WrRenderer* r) {
     if (!r) return;
 
-    TerminateFramebuffer(&r->fb);
-
-    free(r->wallStarts);
-    r->wallStarts = NULL;
+    free(r->fcDists);
+    r->fcDists = NULL;
 
     free(r->wallEnds);
     r->wallEnds = NULL;
 
+    free(r->wallStarts);
+    r->wallStarts = NULL;
+
+    TerminateFramebuffer(&r->fb);
     TerminateTextures(r->textures);
 
     free(r->rays);
@@ -71,8 +72,7 @@ void TerminateRenderer(WrRenderer* r) {
 }
 
 static void DrawWallsToFramebuffer(WrRenderer* r, const WrMap* m);
-static void DrawCeilToFramebuffer(WrRenderer* r, const WrPlayer* p);
-static void DrawFloorToFramebuffer(WrRenderer* r, const WrPlayer* p);
+static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p);
 
 void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     int sw = GetScreenWidth();
@@ -89,8 +89,7 @@ void UpdateRenderer(WrRenderer* r, const WrGame* g) {
     CastRays(r->rays, r->fb.width, &g->map, &g->player);
 
     DrawWallsToFramebuffer(r, &g->map);
-    DrawCeilToFramebuffer(r, &g->player);
-    DrawFloorToFramebuffer(r, &g->player);
+    DrawFloorAndCeilToFramebuffer(r, &g->player);
 
     UpdateTexture(r->fb.frame, r->fb.buffer);
 }
@@ -155,80 +154,40 @@ static void DrawWallsToFramebuffer(WrRenderer* r, const WrMap* m) {
         }
 
         r->wallStarts[i] = drawStart;
-        r->wallEnds[i] = drawEnd;
+        r->wallEnds[i] = drawEnd - 1;
     }
 }
 
-static void DrawCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
+static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
     const WrTexture* texture = GetTexture(r->textures, WR_TEXTURE_TILES_4);
 
-    for (int i = 0; i < r->fb.width; i++) {
-        int start = r->wallStarts[i] - 1;
-        int half = r->fb.height / 2;
-        if (start >= half) start = half - 1;
-
-        const WrRay* ray = &r->rays[i];
+    for (int x = 0; x < r->fb.width; x++) {
+        const WrRay* ray = &r->rays[x];
         float rayX = ray->pos.x - p->pos.x;
         float rayY = ray->pos.y - p->pos.y;
 
-        for (int y = start; y >= 0; y--) {
-            float d = half - (float)y; // Pixel dist from horizon
-            float ceilDist = half / d; // Perpendicular dist from player
+        for (int y = 0; y < r->fb.height; y++) {
+            if ((y >= r->wallStarts[x] && y <= r->wallEnds[x]) || y == r->fb.height / 2) continue;
 
-            float scale = ceilDist / ray->dist;
-            float ceilX = p->pos.x + rayX * scale;
-            float ceilY = p->pos.y + rayY * scale;
+            float dist = r->fcDists[y * r->fb.width + x];
 
-            float brightness = 1.f - ceilDist / WR_FOG_DISTANCE;
+            float scale = dist / ray->dist;
+            float posX = p->pos.x + rayX * scale;
+            float posY = p->pos.y + rayY * scale;
+
+            float brightness = 1.f - dist / WR_FOG_DISTANCE;
             brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
 
-            int textureColumn = (int)((ceilX - floorf(ceilX)) * texture->width);
+            int textureColumn = (int)((posX - floorf(posX)) * texture->width);
             if (textureColumn == texture->width) textureColumn = texture->width - 1;
 
-            int textureRow = (int)((ceilY - floorf(ceilY)) * texture->height);
+            int textureRow = (int)((posY - floorf(posY)) * texture->height);
             if (textureRow == texture->height) textureRow = texture->height - 1;
 
             Color col = texture->data[textureRow * texture->width + textureColumn];
             col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
 
-            r->fb.buffer[y * r->fb.width + i] = col;
-        }
-    }
-}
-
-static void DrawFloorToFramebuffer(WrRenderer* r, const WrPlayer* p) {
-    const WrTexture* texture = GetTexture(r->textures, WR_TEXTURE_TILES_4);
-
-    for (int i = 0; i < r->fb.width; i++) {
-        int start = r->wallEnds[i];
-        int half = r->fb.height / 2;
-        if (start <= half) start = half + 1;
-
-        const WrRay* ray = &r->rays[i];
-        float rayX = ray->pos.x - p->pos.x;
-        float rayY = ray->pos.y - p->pos.y;
-
-        for (int y = start; y < r->fb.height; y++) {
-            float d = (float)y - half;  // Pixel dist from horizon
-            float floorDist = half / d; // Perpendicular dist from player
-
-            float scale = floorDist / ray->dist;
-            float floorX = p->pos.x + rayX * scale;
-            float floorY = p->pos.y + rayY * scale;
-
-            float brightness = 1.f - floorDist / WR_FOG_DISTANCE;
-            brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
-
-            int textureColumn = (int)((floorX - floorf(floorX)) * texture->width);
-            if (textureColumn == texture->width) textureColumn = texture->width - 1;
-
-            int textureRow = (int)((floorY - floorf(floorY)) * texture->height);
-            if (textureRow == texture->height) textureRow = texture->height - 1;
-
-            Color col = texture->data[textureRow * texture->width + textureColumn];
-            col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
-
-            r->fb.buffer[y * r->fb.width + i] = col;
+            r->fb.buffer[y * r->fb.width + x] = col;
         }
     }
 }
