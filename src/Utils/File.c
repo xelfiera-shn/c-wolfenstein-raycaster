@@ -57,11 +57,16 @@ static size_t GetLineCount(FILE* fptr) {
     if (!fptr) return 0;
 
     size_t count = 0;
+    int prev = '\n';
     int ch;
 
     while ((ch = fgetc(fptr)) != EOF) {
         if (ch == '\n') count++;
+
+        prev = ch;
     }
+
+    if (prev != '\n') count++;
 
     rewind(fptr);
 
