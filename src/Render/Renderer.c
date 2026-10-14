@@ -8,6 +8,12 @@
 #include <math.h>
 #include <raylib.h>
 
+// Floor and ceil data for each framebuffer row
+typedef struct WrFlatRow {
+    float dist;
+    float brightness;
+} WrFlatRow;
+
 bool InitRenderer(WrRenderer* r) {
     r->screenWidth = GetScreenWidth();
     r->screenHeight = GetScreenHeight();

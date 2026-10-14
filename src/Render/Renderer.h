@@ -7,13 +7,8 @@
 
 #include <stdbool.h>
 
+typedef struct WrFlatRow WrFlatRow;
 typedef struct WrGame WrGame;
-
-// Floor and ceil datas each framebuffer row
-typedef struct WrFcFlatRow {
-    float dist;
-    float brightness;
-} WrFcFlatRow;
 
 typedef struct WrRenderer {
     int screenWidth;  // Width of window screen
@@ -25,7 +20,7 @@ typedef struct WrRenderer {
 
     int* wallStarts;
     int* wallEnds;
-    WrFcFlatRow* fcTable;
+    WrFlatRow* fcTable;
 } WrRenderer;
 
 bool InitRenderer(WrRenderer* r);
