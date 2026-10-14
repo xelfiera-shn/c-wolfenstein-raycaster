@@ -86,12 +86,19 @@ static bool InitMapFromFile(WrMap* m, const char* path) {
     WrFile file;
     if (!InitFile(&file, path)) return false;
 
-    if (!ReadWidthAndHeight(m, &file)) return false;
-    if (!ReadPlayerStartPos(m, &file)) return false;
-    if (!ReadPlayerStartDir(m, &file)) return false;
+    bool condition = !ReadWidthAndHeight(m, &file) || !ReadPlayerStartPos(m, &file) || !ReadPlayerStartDir(m, &file);
+    if (!condition) {
+        TerminateFile(&file);
+
+        return false;
+    }
 
     m->data = calloc(m->width * m->height, sizeof *m->data);
-    if (!m->data) return false;
+    if (!m->data) {
+        TerminateFile(&file);
+
+        return false;
+    }
 
     if (!ReadMapData(m, &file)) {
         TerminateFile(&file);
