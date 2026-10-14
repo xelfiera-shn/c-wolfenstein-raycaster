@@ -111,7 +111,7 @@ static void DrawWallsToFramebuffer(WrRenderer* r, const WrMap* m) {
         const WrRay* ray = &r->rays[i];
         if (ray->face == WR_WALL_FACE_NONE) {
             r->wallStarts[i] = r->fb.height / 2;
-            r->wallEnds[i] = r->fb.height / 2;
+            r->wallEnds[i] = r->fb.height / 2 - 1;
 
             continue;
         }
