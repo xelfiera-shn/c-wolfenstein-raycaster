@@ -28,7 +28,7 @@ bool InitRenderer(WrRenderer* r) {
 
     r->wallStarts = calloc(r->fb.width, sizeof *r->wallStarts);
     r->wallEnds = calloc(r->fb.width, sizeof *r->wallEnds);
-    r->fcTable = calloc(2 * r->fb.height, sizeof *r->fcTable);
+    r->fcTable = calloc(r->fb.height, sizeof *r->fcTable);
 
     if (!r->wallStarts || !r->wallEnds || !r->fcTable) {
         TerminateRenderer(r);
@@ -39,12 +39,12 @@ bool InitRenderer(WrRenderer* r) {
     int horizon = r->fb.height / 2;
     for (int y = 0; y < r->fb.height; y++) {
         float d = fabsf(y + 0.5f - horizon);
-        r->fcTable[y * 2 + 0] = horizon / d;
+        r->fcTable[y].dist = horizon / d;
 
-        float brightness = 1.f - r->fcTable[y * 2 + 0] / WR_FOG_DISTANCE;
+        float brightness = 1.f - r->fcTable[y].dist / WR_FOG_DISTANCE;
         brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
 
-        r->fcTable[y * 2 + 1] = brightness;
+        r->fcTable[y].brightness = brightness;
     }
 
     return true;
@@ -163,8 +163,8 @@ static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
 
         for (int y = 0; y < r->fb.height; y++) {
             if ((y >= 0 && y < r->wallStarts[x]) || (y > r->wallEnds[x] && y < r->fb.height)) {
-                float dist = r->fcTable[y * 2 + 0];
-                float brightness = r->fcTable[y * 2 + 1];
+                float dist = r->fcTable[y].dist;
+                float brightness = r->fcTable[y].brightness;
 
                 float scale = dist * invDist;
                 float posX = p->pos.x + rayX * scale;

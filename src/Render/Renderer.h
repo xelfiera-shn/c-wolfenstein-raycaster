@@ -9,6 +9,12 @@
 
 typedef struct WrGame WrGame;
 
+// Floor and ceil datas each framebuffer row
+typedef struct WrFcFlatRow {
+    float dist;
+    float brightness;
+} WrFcFlatRow;
+
 typedef struct WrRenderer {
     int screenWidth;  // Width of window screen
     int screenHeight; // Height of window screen
@@ -19,7 +25,7 @@ typedef struct WrRenderer {
 
     int* wallStarts;
     int* wallEnds;
-    float* fcTable; // Column 0: Perpendicular floor and ceil dists from player. Column 1: Brightness factor of dists.
+    WrFcFlatRow* fcTable;
 } WrRenderer;
 
 bool InitRenderer(WrRenderer* r);
