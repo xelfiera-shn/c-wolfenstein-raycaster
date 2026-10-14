@@ -28,25 +28,23 @@ bool InitRenderer(WrRenderer* r) {
 
     r->wallStarts = calloc(r->fb.width, sizeof *r->wallStarts);
     r->wallEnds = calloc(r->fb.width, sizeof *r->wallEnds);
-    r->fcDists = calloc(r->fb.width * r->fb.height, sizeof *r->fcDists);
+    r->fcTable = calloc(2 * r->fb.height, sizeof *r->fcTable);
 
-    if (!r->wallStarts || !r->wallEnds || !r->fcDists) {
+    if (!r->wallStarts || !r->wallEnds || !r->fcTable) {
         TerminateRenderer(r);
 
         return false;
     }
 
     int horizon = r->fb.height / 2;
-    for (int x = 0; x < r->fb.width; x++) {
-        for (int y = 0; y < r->fb.height; y++) {
-            float d = 0.f;
-            if (y < horizon)
-                d = horizon - (float)y;
-            else if (y > horizon)
-                d = (float)y - horizon;
+    for (int y = 0; y < r->fb.height; y++) {
+        float d = fabsf(y + 0.5f - horizon);
+        r->fcTable[y * 2 + 0] = horizon / d;
 
-            r->fcDists[y * r->fb.width + x] = horizon / d;
-        }
+        float brightness = 1.f - r->fcTable[y * 2 + 0] / WR_FOG_DISTANCE;
+        brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
+
+        r->fcTable[y * 2 + 1] = brightness;
     }
 
     return true;
@@ -55,8 +53,8 @@ bool InitRenderer(WrRenderer* r) {
 void TerminateRenderer(WrRenderer* r) {
     if (!r) return;
 
-    free(r->fcDists);
-    r->fcDists = NULL;
+    free(r->fcTable);
+    r->fcTable = NULL;
 
     free(r->wallEnds);
     r->wallEnds = NULL;
@@ -159,31 +157,30 @@ static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
 
     for (int x = 0; x < r->fb.width; x++) {
         const WrRay* ray = &r->rays[x];
+        float invDist = 1.f / ray->dist;
         float rayX = ray->pos.x - p->pos.x;
         float rayY = ray->pos.y - p->pos.y;
 
         for (int y = 0; y < r->fb.height; y++) {
-            if ((y >= r->wallStarts[x] && y <= r->wallEnds[x]) || y == r->fb.height / 2) continue;
+            if ((y >= 0 && y < r->wallStarts[x]) || (y > r->wallEnds[x] && y < r->fb.height)) {
+                float dist = r->fcTable[y * 2 + 0];
+                float brightness = r->fcTable[y * 2 + 1];
 
-            float dist = r->fcDists[y * r->fb.width + x];
+                float scale = dist * invDist;
+                float posX = p->pos.x + rayX * scale;
+                float posY = p->pos.y + rayY * scale;
 
-            float scale = dist / ray->dist;
-            float posX = p->pos.x + rayX * scale;
-            float posY = p->pos.y + rayY * scale;
+                int textureColumn = (int)((posX - floorf(posX)) * texture->width);
+                if (textureColumn == texture->width) textureColumn = texture->width - 1;
 
-            float brightness = 1.f - dist / WR_FOG_DISTANCE;
-            brightness = WR_CLAMP(brightness, WR_FOG_MIN_BRIGHTNESS_FACTOR, 1.f);
+                int textureRow = (int)((posY - floorf(posY)) * texture->height);
+                if (textureRow == texture->height) textureRow = texture->height - 1;
 
-            int textureColumn = (int)((posX - floorf(posX)) * texture->width);
-            if (textureColumn == texture->width) textureColumn = texture->width - 1;
+                Color col = texture->data[textureRow * texture->width + textureColumn];
+                col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
 
-            int textureRow = (int)((posY - floorf(posY)) * texture->height);
-            if (textureRow == texture->height) textureRow = texture->height - 1;
-
-            Color col = texture->data[textureRow * texture->width + textureColumn];
-            col = (Color){(unsigned char)(col.r * brightness), (unsigned char)(col.g * brightness), (unsigned char)(col.b * brightness), col.a};
-
-            r->fb.buffer[y * r->fb.width + x] = col;
+                r->fb.buffer[y * r->fb.width + x] = col;
+            }
         }
     }
 }

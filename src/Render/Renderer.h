@@ -19,7 +19,7 @@ typedef struct WrRenderer {
 
     int* wallStarts;
     int* wallEnds;
-    float* fcDists; // Perpendicular floor and ceil dists from player
+    float* fcTable; // Column 0: Perpendicular floor and ceil dists from player. Column 1: Brightness factor of dists.
 } WrRenderer;
 
 bool InitRenderer(WrRenderer* r);
