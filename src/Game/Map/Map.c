@@ -1,10 +1,8 @@
 #include "Map.h"
+#include "MapFormat.h"
 #include "Utils/File.h"
 
 #include <stdlib.h>
-#include <stdio.h>
-
-#define WR_MAP_DATA_START_LINE 4
 
 // clang-format off
 static const char* const WR_MAP_PATHS[WR_MAP_COUNT] = {
@@ -96,17 +94,20 @@ static bool InitMapFromFile(WrMap* m, const char* path) {
     if (!m->data) return false;
 
     if (!ReadMapData(m, &file)) {
+        TerminateFile(&file);
         TerminateMap(m);
 
         return false;
     }
+
+    TerminateFile(&file);
 
     return true;
 }
 
 static bool ReadWidthAndHeight(WrMap* m, const WrFile* file) {
     char* end;
-    long w = strtol(file->data[0], &end, 10);
+    long w = strtol(file->data[WR_MAP_SIZE_LINE], &end, 10);
     if (*end != ',') return false;
     long h = strtol(end + 1, &end, 10);
 
@@ -120,9 +121,9 @@ static bool ReadPlayerStartPos(WrMap* m, const WrFile* file) {
     WrVector2 pos;
 
     char* end;
-    pos.x = (float)strtol(file->data[1], &end, 10);
+    pos.x = (float)strtof(file->data[WR_MAP_PLAYER_START_POS_LINE], &end);
     if (*end != ',') return false;
-    pos.y = (float)strtol(end + 1, &end, 10);
+    pos.y = (float)strtof(end + 1, &end);
 
     m->playerStartPos = pos;
 
@@ -133,9 +134,9 @@ static bool ReadPlayerStartDir(WrMap* m, const WrFile* file) {
     WrVector2 dir;
 
     char* end;
-    dir.x = (float)strtol(file->data[2], &end, 10);
+    dir.x = (float)strtof(file->data[WR_MAP_PLAYER_START_DIR_LINE], &end);
     if (*end != ',') return false;
-    dir.y = (float)strtol(end + 1, &end, 10);
+    dir.y = (float)strtof(end + 1, &end);
 
     m->playerStartDir = dir;
 
@@ -144,18 +145,14 @@ static bool ReadPlayerStartDir(WrMap* m, const WrFile* file) {
 
 static bool ReadMapData(WrMap* m, const WrFile* file) {
     for (int y = 0; y < m->height; y++) {
-        char* end = file->data[y + WR_MAP_DATA_START_LINE] - 1;
+        char* end = file->data[y + WR_MAP_WALL_DATA_START_LINE] - 1;
         for (int x = 0; x < m->width; x++) {
             long val = strtol(end + 1, &end, 10);
 
             if (*end != ',') return false;
 
-            printf("%d,", (int)val);
-
             m->data[y * m->width + x] = (uint8_t)val;
         }
-
-        printf("\n");
     }
 
     return true;

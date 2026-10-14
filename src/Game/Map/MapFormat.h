@@ -1,0 +1,12 @@
+#ifndef WR_MAP_FORMAT_H
+#define WR_MAP_FORMAT_H
+
+#define WR_MAP_SIZE_LINE 0
+#define WR_MAP_PLAYER_START_POS_LINE 1
+#define WR_MAP_PLAYER_START_DIR_LINE 2
+
+#define WR_MAP_WALL_DATA_START_LINE 4
+#define WR_MAP_FLOOR_DATA_START_LINE(height) ((WR_MAP_WALL_DATA_START_LINE) + (height) + 1)
+#define WR_MAP_CEIL_DATA_START_LINE(height) ((WR_MAP_FLOOR_DATA_START_LINE(height)) + (height) + 1)
+
+#endif // WR_MAP_FORMAT_H
