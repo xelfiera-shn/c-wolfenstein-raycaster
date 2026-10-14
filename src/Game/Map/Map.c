@@ -121,9 +121,9 @@ static bool ReadPlayerStartPos(WrMap* m, const WrFile* file) {
     WrVector2 pos;
 
     char* end;
-    pos.x = (float)strtof(file->data[WR_MAP_PLAYER_START_POS_LINE], &end);
+    pos.x = strtof(file->data[WR_MAP_PLAYER_START_POS_LINE], &end);
     if (*end != ',') return false;
-    pos.y = (float)strtof(end + 1, &end);
+    pos.y = strtof(end + 1, &end);
 
     m->playerStartPos = pos;
 
@@ -134,9 +134,9 @@ static bool ReadPlayerStartDir(WrMap* m, const WrFile* file) {
     WrVector2 dir;
 
     char* end;
-    dir.x = (float)strtof(file->data[WR_MAP_PLAYER_START_DIR_LINE], &end);
+    dir.x = strtof(file->data[WR_MAP_PLAYER_START_DIR_LINE], &end);
     if (*end != ',') return false;
-    dir.y = (float)strtof(end + 1, &end);
+    dir.y = strtof(end + 1, &end);
 
     m->playerStartDir = dir;
 
@@ -148,7 +148,6 @@ static bool ReadMapData(WrMap* m, const WrFile* file) {
         char* end = file->data[y + WR_MAP_WALL_DATA_START_LINE] - 1;
         for (int x = 0; x < m->width; x++) {
             long val = strtol(end + 1, &end, 10);
-
             if (*end != ',') return false;
 
             m->data[y * m->width + x] = (uint8_t)val;
