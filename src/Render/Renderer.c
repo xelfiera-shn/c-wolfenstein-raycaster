@@ -162,7 +162,7 @@ static void DrawFloorAndCeilToFramebuffer(WrRenderer* r, const WrPlayer* p) {
         float rayY = ray->pos.y - p->pos.y;
 
         for (int y = 0; y < r->fb.height; y++) {
-            if ((y >= 0 && y < r->wallStarts[x]) || (y > r->wallEnds[x] && y < r->fb.height)) {
+            if (y < r->wallStarts[x] || y > r->wallEnds[x]) {
                 float dist = r->fcTable[y].dist;
                 float brightness = r->fcTable[y].brightness;
 
