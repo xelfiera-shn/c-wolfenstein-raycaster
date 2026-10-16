@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define WR_FILE_LINE_MAX_LENGTH 256
+#define WR_FILE_LINE_MAX_LENGTH 1024
 
 typedef struct WrFile {
     size_t lineCount;
