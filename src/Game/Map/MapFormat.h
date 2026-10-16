@@ -9,4 +9,6 @@
 #define WR_MAP_FLOOR_DATA_START_LINE(height) ((WR_MAP_WALL_DATA_START_LINE) + (height) + 1)
 #define WR_MAP_CEIL_DATA_START_LINE(height) ((WR_MAP_FLOOR_DATA_START_LINE(height)) + (height) + 1)
 
+#define WR_MAP_FILE_LINE_COUNT(height) ((WR_MAP_CEIL_DATA_START_LINE(height)) + (height))
+
 #endif // WR_MAP_FORMAT_H
