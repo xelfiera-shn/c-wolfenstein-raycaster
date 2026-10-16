@@ -21,7 +21,9 @@ typedef enum {
 typedef struct WrMap {
     int width;
     int height;
-    uint8_t* data;
+    uint8_t* wallData;
+    uint8_t* floorData;
+    uint8_t* ceilData;
 
     WrVector2 playerStartPos; // Player start position vector
     WrVector2 playerStartDir; // Player start direction vector

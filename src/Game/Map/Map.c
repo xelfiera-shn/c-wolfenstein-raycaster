@@ -38,7 +38,9 @@ static bool InitMapFromFile(WrMap* m, const char* path);
 static bool ReadWidthAndHeight(WrMap* m, const WrFile* file);
 static bool ReadPlayerStartPos(WrMap* m, const WrFile* file);
 static bool ReadPlayerStartDir(WrMap* m, const WrFile* file);
-static bool ReadMapData(WrMap* m, const WrFile* file);
+static bool ReadMapWallData(WrMap* m, const WrFile* file);
+static bool ReadMapFloorData(WrMap* m, const WrFile* file);
+static bool ReadMapCeilData(WrMap* m, const WrFile* file);
 
 bool InitMap(WrMap* m, WrMapType type) {
     if (!InitMapFromFile(m, WR_MAP_PATHS[type])) {
@@ -49,16 +51,20 @@ bool InitMap(WrMap* m, WrMapType type) {
 }
 
 void TerminateMap(WrMap* m) {
-    if (!m->data) return;
+    free(m->wallData);
+    m->wallData = NULL;
 
-    free(m->data);
-    m->data = NULL;
+    free(m->floorData);
+    m->floorData = NULL;
+
+    free(m->ceilData);
+    m->ceilData = NULL;
 }
 
 int GetMapCell(const WrMap* m, int cx, int cy) {
     if (cx < 0 || cx >= m->width || cy < 0 || cy >= m->height) return 1;
 
-    return m->data[cy * m->width + cx];
+    return m->wallData[cy * m->width + cx];
 }
 
 bool IsMapCellSolid(const WrMap* m, int cx, int cy) {
@@ -69,11 +75,24 @@ static bool InitDefaultMap(WrMap* m) {
     m->width = defaultMapW;
     m->height = defaultMapH;
 
-    m->data = malloc(defaultMapW * defaultMapH * sizeof *m->data);
-    if (!m->data) return false;
+    m->wallData = malloc(defaultMapW * defaultMapH * sizeof *m->wallData);
+    m->floorData = malloc(defaultMapW * defaultMapH * sizeof *m->floorData);
+    m->ceilData = malloc(defaultMapW * defaultMapH * sizeof *m->ceilData);
+    if (!m->wallData || !m->floorData || !m->ceilData) {
+        free(m->wallData);
+        m->wallData = NULL;
+
+        free(m->floorData);
+        m->floorData = NULL;
+
+        free(m->ceilData);
+        m->ceilData = NULL;
+
+        return false;
+    }
 
     for (int i = 0; i < m->width * m->height; i++) {
-        m->data[i] = defaultMap[i];
+        m->wallData[i] = defaultMap[i];
     }
 
     m->playerStartPos = defaultPlayerStartPos;
@@ -104,14 +123,25 @@ static bool InitMapFromFile(WrMap* m, const char* path) {
         return false;
     }
 
-    m->data = calloc(m->width * m->height, sizeof *m->data);
-    if (!m->data) {
+    m->wallData = calloc(m->width * m->height, sizeof *m->wallData);
+    m->floorData = calloc(m->width * m->height, sizeof *m->floorData);
+    m->ceilData = calloc(m->width * m->height, sizeof *m->ceilData);
+    if (!m->wallData || !m->floorData || !m->ceilData) {
+        free(m->wallData);
+        m->wallData = NULL;
+
+        free(m->floorData);
+        m->floorData = NULL;
+
+        free(m->ceilData);
+        m->ceilData = NULL;
+
         TerminateFile(&file);
 
         return false;
     }
 
-    if (!ReadMapData(m, &file)) {
+    if (!ReadMapWallData(m, &file) && !ReadMapFloorData(m, &file) && !ReadMapCeilData(m, &file)) {
         TerminateFile(&file);
         TerminateMap(m);
 
@@ -161,14 +191,42 @@ static bool ReadPlayerStartDir(WrMap* m, const WrFile* file) {
     return true;
 }
 
-static bool ReadMapData(WrMap* m, const WrFile* file) {
+static bool ReadMapWallData(WrMap* m, const WrFile* file) {
     for (int y = 0; y < m->height; y++) {
         char* end = file->data[y + WR_MAP_WALL_DATA_START_LINE] - 1;
         for (int x = 0; x < m->width; x++) {
             long val = strtol(end + 1, &end, 10);
             if (*end != ',') return false;
 
-            m->data[y * m->width + x] = (uint8_t)val;
+            m->wallData[y * m->width + x] = (uint8_t)val;
+        }
+    }
+
+    return true;
+}
+
+static bool ReadMapFloorData(WrMap* m, const WrFile* file) {
+    for (int y = 0; y < m->height; y++) {
+        char* end = file->data[y + WR_MAP_FLOOR_DATA_START_LINE(m->height)] - 1;
+        for (int x = 0; x < m->width; x++) {
+            long val = strtol(end + 1, &end, 10);
+            if (*end != ',') return false;
+
+            m->floorData[y * m->width + x] = (uint8_t)val;
+        }
+    }
+
+    return true;
+}
+
+static bool ReadMapCeilData(WrMap* m, const WrFile* file) {
+    for (int y = 0; y < m->height; y++) {
+        char* end = file->data[y + WR_MAP_CEIL_DATA_START_LINE(m->height)] - 1;
+        for (int x = 0; x < m->width; x++) {
+            long val = strtol(end + 1, &end, 10);
+            if (*end != ',') return false;
+
+            m->ceilData[y * m->width + x] = (uint8_t)val;
         }
     }
 
