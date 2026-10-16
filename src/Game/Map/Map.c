@@ -86,8 +86,19 @@ static bool InitMapFromFile(WrMap* m, const char* path) {
     WrFile file;
     if (!InitFile(&file, path)) return false;
 
-    bool condition = !ReadWidthAndHeight(m, &file) || !ReadPlayerStartPos(m, &file) || !ReadPlayerStartDir(m, &file);
-    if (!condition) {
+    if (!ReadWidthAndHeight(m, &file)) {
+        TerminateFile(&file);
+
+        return false;
+    }
+
+    if (!(m->width > 0 && m->height > 0 && file.lineCount >= WR_MAP_FILE_LINE_COUNT(m->height))) {
+        TerminateFile(&file);
+
+        return false;
+    }
+
+    if (!ReadPlayerStartPos(m, &file) || !ReadPlayerStartDir(m, &file)) {
         TerminateFile(&file);
 
         return false;
